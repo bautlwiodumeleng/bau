@@ -1,0 +1,306 @@
+{% extends "base.html" %}
+
+{% block title %}Customer Details{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+    <div>
+
+        <h2 class="fw-bold">
+            👤 {{ customer.name }}
+        </h2>
+
+        <p class="text-muted mb-0">
+            Customer Information
+        </p>
+
+    </div>
+
+</div>
+
+    <div class="card shadow">
+
+        <div class="card-body">
+
+            <div class="card shadow-sm border-0 mb-4">
+
+    <div class="card-header bg-primary text-white">
+
+        <h5 class="mb-0">
+            👤 Customer Information
+        </h5>
+
+    </div>
+
+    <div class="card-body">
+
+        <div class="row">
+
+            <div class="col-md-6 mb-3">
+
+                <strong>Name</strong><br>
+                {{ customer.name }}
+
+            </div>
+
+            <div class="col-md-6 mb-3">
+
+                <strong>Phone</strong><br>
+                {{ customer.phone or "Not provided" }}
+
+            </div>
+
+            <div class="col-md-6 mb-3">
+
+                <strong>Email</strong><br>
+                {{ customer.email or "Not provided" }}
+
+            </div>
+
+            <div class="col-md-6 mb-3">
+
+                <strong>Company</strong><br>
+                {{ customer.company or "Not provided" }}
+
+            </div>
+
+            <div class="col-12">
+
+                <strong>Address</strong><br>
+                {{ customer.address or "Not provided" }}
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+            <p><strong>Notes:</strong></p>
+
+             <div class="card-header bg-secondary text-white">
+
+        <h5 class="mb-0">
+            📝 Notes
+        </h5>
+
+    </div>
+
+    <div class="card-body">
+
+        {% if customer.notes %}
+
+            <p class="mb-0">
+                {{ customer.notes }}
+            </p>
+
+        {% else %}
+
+            <p class="text-muted mb-0">
+                No notes available.
+            </p>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+    
+<hr>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+
+    <h4 class="fw-bold mb-0">
+        📋 Tasks
+    </h4>
+
+    <a href="{{ url_for('main.add_task', customer_id=customer.id) }}"
+       class="btn btn-primary btn-sm">
+        ➕ Add Task
+    </a>
+
+</div>
+
+<!-- Active Tasks -->
+
+<div class="card shadow-sm border-0 mb-4">
+
+    <div class="card-header bg-success text-white">
+
+        <h5 class="mb-0">
+            ⏳ Active Tasks
+        </h5>
+
+    </div>
+
+    <div class="card-body">
+
+        {% set active_tasks = customer.tasks | selectattr("completed", "equalto", False) | list %}
+
+        {% if active_tasks %}
+
+            <ul class="list-group list-group-flush">
+
+                {% for task in active_tasks %}
+
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+
+                    <div>
+
+    <h6 class="fw-bold mb-2">
+        ⏳ {{ task.title }}
+    </h6>
+
+    {% if task.due_date %}
+        <div class="mb-2">
+            <small class="text-muted">
+                📅 Due Date
+            </small><br>
+            {{ task.due_date.strftime("%d %b %Y") }}
+        </div>
+    {% endif %}
+
+    <div class="mb-2">
+
+        {% if task.priority == "High" %}
+            <span class="badge bg-danger">High Priority</span>
+        {% elif task.priority == "Medium" %}
+            <span class="badge bg-warning text-dark">Medium Priority</span>
+        {% else %}
+            <span class="badge bg-success">Low Priority</span>
+        {% endif %}
+
+    </div>
+
+    <small class="text-muted">
+        🕒 Created:
+        {{ task.created_at.strftime("%d %b %Y") }}
+    </small>
+
+</div>
+                    <div>
+
+                        <a href="{{ url_for('main.edit_task', task_id=task.id) }}"
+                           class="btn btn-warning btn-sm">
+                            ✏ Edit
+                        </a>
+
+                        <a href="{{ url_for('main.complete_task', task_id=task.id) }}"
+                           class="btn btn-success btn-sm">
+                            ✓ Complete                        </a>
+
+                        <a href="{{ url_for('main.delete_task', task_id=task.id) }}"
+                           class="btn btn-danger btn-sm"
+                           onclick="return confirm('Delete this task?');">
+                             📦 Archive
+                        </a>
+
+                    </div>
+
+                </li>
+
+                {% endfor %}
+
+            </ul>
+
+        {% else %}
+
+            <p class="text-muted mb-0">
+                No active tasks.
+            </p>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+<!-- Completed Tasks -->
+
+<div class="card shadow-sm border-0 mb-4">
+
+    <div class="card-header bg-secondary text-white">
+
+        <h5 class="mb-0">
+            ✅ Completed Tasks
+        </h5>
+
+    </div>
+
+    <div class="card-body">
+
+        {% set completed_tasks = customer.tasks | selectattr("completed", "equalto", True) | list %}
+
+        {% if completed_tasks %}
+
+            <ul class="list-group list-group-flush">
+
+                {% for task in completed_tasks %}
+
+                <li class="list-group-item">
+
+                    <strong>✅ {{ task.title }}</strong>
+
+                    {% if task.completed_at %}
+                    <br>
+                    <small class="text-success">
+                        Completed:
+                        {{ task.completed_at.strftime("%d %b %Y") }}
+                    </small>
+                    {% endif %}
+
+                    {% if task.priority == "High" %}
+                        <br><span class="badge bg-danger">🔴 High</span>
+                    {% elif task.priority == "Medium" %}
+                        <br><span class="badge bg-warning text-dark">🟡 Medium</span>
+                    {% else %}
+                        <br><span class="badge bg-success">🟢 Low</span>
+                    {% endif %}
+
+                </li>
+
+                {% endfor %}
+
+            </ul>
+
+        {% else %}
+
+            <p class="text-muted mb-0">
+                No completed tasks.
+            </p>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+            <a href="{{ url_for('main.edit_customer', customer_id=customer.id) }}"
+               class="btn btn-warning">
+                ✏️ Edit
+            </a>
+
+            <a href="{{ url_for('main.archive_customer', customer_id=customer.id) }}"
+               class="btn btn-danger"
+               onclick="return confirm('Are you sure you want to archive this customer?');">
+                 📦 Archive Customer
+            </a>
+
+            <a href="{{ url_for('main.customers') }}"
+               class="btn btn-secondary">
+                ⬅ Back
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
