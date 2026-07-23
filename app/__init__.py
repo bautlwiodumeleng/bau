@@ -2,9 +2,11 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_migrate import Migrate
+
 db = SQLAlchemy()
 login_manager = LoginManager()
 migrate = Migrate()
+
 login_manager.login_view = "main.login"
 
 def create_app():
@@ -21,6 +23,6 @@ def create_app():
 
     with app.app_context():
         from . import models
-        
+        db.create_all()      # ← ADD THIS LINE
 
     return app
