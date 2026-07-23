@@ -17,6 +17,13 @@ main = Blueprint("main", __name__)
 from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill
 
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import A4
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
+from reportlab.pdfbase import pdfmetrics
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.platypus import Paragraph
+
 from openpyxl.utils import get_column_letter
 from io import BytesIO
 from openpyxl.styles import Border, Side
@@ -564,6 +571,84 @@ def export_xlsx():
             "Content-Disposition": "attachment; filename=customers.xlsx"
         }
     ) 
+    
+@main.route("/export/pdf")
+@login_required
+def export_pdf():
+
+    customers = Customer.query.filter_by(
+        created_by=current_user.id,
+        is_archived=False
+    ).all()
+
+    output = BytesIO()
+
+    doc = SimpleDocTemplate(output, pagesize=A4)
+
+    styles = getSampleStyleSheet()
+
+    elements = []
+
+    # Title
+    elements.append(
+        Paragraph("<b>BAU CUSTOMER PORTAL</b>", styles["Title"])
+    )
+
+    elements.append(
+        Paragraph("Customer Management Report", styles["Heading2"])
+    )
+
+    elements.append(
+        Paragraph("<br/>", styles["Normal"])
+    )
+
+    # Table data
+    data = [[
+        "Customer ID",
+        "Name",
+        "Phone",
+        "Email",
+        "Company",
+        "Address"
+    ]]
+
+    for customer in customers:
+        data.append([
+            customer.customer_code,
+            customer.name,
+            customer.phone,
+            customer.email,
+            customer.company,
+            customer.address
+        ])
+
+    table = Table(data)
+
+    table.setStyle(TableStyle([
+        ("BACKGROUND", (0,0), (-1,0), colors.darkblue),
+        ("TEXTCOLOR", (0,0), (-1,0), colors.white),
+        ("GRID", (0,0), (-1,-1), 1, colors.black),
+        ("FONTNAME", (0,0), (-1,0), "Helvetica-Bold"),
+        ("BACKGROUND", (0,1), (-1,-1), colors.beige),
+        ("BOTTOMPADDING", (0,0), (-1,0), 8),
+    ]))
+
+    elements.append(table)
+
+    doc.build(elements)
+
+    output.seek(0)
+
+    return Response(
+        output.getvalue(),
+        mimetype="application/pdf",
+        headers={
+            "Content-Disposition":
+            "attachment; filename=customers.pdf"
+        }
+    )
+    
+    
         
 @main.route("/customer/<int:customer_id>")
 @login_required
