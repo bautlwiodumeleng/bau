@@ -55,7 +55,7 @@
                         type="text"
                         name="search"
                         class="form-control"
-                        placeholder="🔍 Search by name, phone, email or company"
+                        placeholder="🔍 Search by name, phone, email or organisation"
                         value="{{ request.args.get('search', '') }}">
 
                 </div>
@@ -76,129 +76,81 @@
     </div>
 
     <!-- Customer Table -->
-    <div class="card shadow-sm border-0">
+<div class="table-responsive" style="max-height:600px; overflow-y:auto;">
 
-        <div class="card-body p-0">
+    <table class="table table-hover align-left mb-0">
 
-    <div class="table-responsive"
-         style="max-height:600px; overflow-y:auto;">
+        <thead class="table-dark"
+               style="position: sticky; top: 0; z-index: 1000;">
 
-        <table class="table table-hover align-middle mb-0">
+            <tr class="text-center">
+                <th style="width:160px;">Customer Code</th>
+                <th>👤 Name</th>
+                <th>📞 Phone</th>
+                <th>📧 Email</th>
+                <th> Organisation</th>
+                <th>📍 Address</th>
+                <th>Actions</th>
+            </tr>
 
-            <thead class="table-dark"
-        style="position: sticky;
-              top: 0;
-              z-index: 1000;
-              background-color: #212529;">
+        </thead>
 
-                    <tr>
-                        <th style="width:160px;">🆔 Customer ID</th>
-                        <th>👤 Name</th>
-                        <th>📞 Phone</th>
-                        <th>📧 Email</th>
-                        <th>🏢 Company</th>
-                        <th>📍 Address</th>
-                        <th class="text-center">Actions</th>
-                    </tr>
+        <tbody>
 
-                </thead>
+        {% for customer in customers %}
 
-                <tbody>
+            <tr>
+                <td>{{ customer.customer_code }}</td>
+                <td>{{ customer.name }}</td>
+                <td>{{ customer.phone }}</td>
+                <td>{{ customer.email }}</td>
+                <td>{{ customer.organisation_name }}</td>
+                <td>{{ customer.address }}</td>
 
-                {% for customer in customers %}
+                <td class="text-center">
 
-                    <tr>
+                    <a href="{{ url_for('main.customer_details',
+                                        customer_code=customer.customer_code) }}"
+                       class="btn btn-primary btn-sm">
+                        👁 View
+                    </a>
 
-                        <td>
-                        <span class="badge bg-secondary px-3 py-2">
-                                {{ customer.customer_code }}
-                        </span>   
-                        </td>
+                    <a href="{{ url_for('main.edit_customer',
+                                        customer_code=customer.customer_code) }}"
+                       class="btn btn-warning btn-sm">
+                        ✏ Edit
+                    </a>
 
-                        <td>
-                            <a href="{{ url_for('main.customer_details',
-                                                customer_id=customer.id) }}"
-                               class="fw-bold text-decoration-none">
-                                {{ customer.name }}
-                            </a>
-                        </td>
+                    <a href="{{ url_for('main.add_task',
+                                        customer_code=customer.customer_code) }}"
+                       class="btn btn-info btn-sm">
+                        ➕ Task
+                    </a>
 
-                        <td>{{ customer.phone }}</td>
+                    <a href="{{ url_for('main.archive_customer',
+                                        customer_code=customer.customer_code) }}"
+                       class="btn btn-danger btn-sm"
+                       onclick="return confirm('Archive this customer?');">
+                        📦 Archive
+                    </a>
 
-                        <td>{{ customer.email }}</td>
+                </td>
 
-                        <td class="align-middle">
+            </tr>
 
-                            {% if customer.company %}
+        {% else %}
 
-                                <span class="badge bg-secondary">
-                                    {{ customer.company }}
-                                </span>
+            <tr>
+                <td colspan="7" class="text-center py-4 text-muted">
+                    No customers found.
+                </td>
+            </tr>
 
-                            {% else %}
+        {% endfor %}
 
-                                -
+        </tbody>
 
-                            {% endif %}
+    </table>
 
-                        </td>
-
-                        <td>{{ customer.address }}</td>
-
-                        <td class="text-center">
-
-                            <a href="{{ url_for('main.customer_details',
-                                                customer_id=customer.id) }}"
-                               class="btn btn-primary btn-sm">
-                                👁 View
-                            </a>
-
-                            <a href="{{ url_for('main.edit_customer',
-                                                customer_id=customer.id) }}"
-                               class="btn btn-warning btn-sm">
-                                ✏ Edit
-                            </a>
-
-                            <a href="{{ url_for('main.add_task',
-                                                customer_id=customer.id) }}"
-                               class="btn btn-info btn-sm">
-                                ➕ Task
-                            </a>
-
-                            <a href="{{ url_for('main.archive_customer',
-                                                customer_id=customer.id) }}"
-                               class="btn btn-danger btn-sm"
-                               onclick="return confirm('Archive  this customer?');">
-                                📦 Archive
-                            </a>
-
-                        </td>
-
-                    </tr>
-
-                {% else %}
-
-                    <tr>
-
-                        <td colspan="7"
-                            class="text-center py-4 text-muted">
-
-                            No customers found.
-
-                        </td>
-
-                    </tr>
-
-                {% endfor %}
-
-                </tbody>
-
-            </table>
-
-        </div>
-
-    </div>
-
-</div>
-
+</div>    
 {% endblock %}

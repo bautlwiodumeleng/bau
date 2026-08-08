@@ -30,7 +30,7 @@
         {{ form.submit(class="btn btn-primary") }}
 
         <a href="{{ url_for('main.customer_details',
-                            customer_id=task.customer_id) }}"
+                            customer_code=task.customer.customer_code) }}"
            class="btn btn-secondary">
             Cancel
         </a>

@@ -1,4 +1,4 @@
-```jinja
+
 {% extends "base.html" %}
 
 {% block title %}Dashboard{% endblock %}
@@ -42,11 +42,11 @@
                 </div>
 
                 <h6 class="text-muted">
-                    Companies
+                    Organisations
                 </h6>
 
                 <h2 class="text-success fw-bold">
-                    {{ total_companies }}
+                    {{ total_organisations }}
                 </h2>
 
             </div>
@@ -113,8 +113,8 @@
 
                             <strong>{{ customer.name }}</strong>
 
-                            {% if customer.company %}
-                                - {{ customer.company }}
+                            {% if customer.organisation_name %}
+                                - {{ customer.organisation_name }}
                             {% endif %}
 
                         </li>
@@ -149,7 +149,7 @@
 
                         <li class="list-group-item">
 
-                            <a href="{{ url_for('main.customer_details', customer_id=task.customer.id) }}"
+                            <a href="{{ url_for('main.customer_details', customer_code=task.customer.customer_code) }}"
                                class="fw-bold text-decoration-none">
                                 {{ task.title }}
                             </a>
@@ -157,7 +157,7 @@
                             <br>
 
                             <small>
-                                <a href="{{ url_for('main.customer_details', customer_id=task.customer.id) }}"
+                                <a href="{{ url_for('main.customer_details', customer_code=task.customer.customer_code) }}"
                                    class="text-decoration-none">
                                     {{ task.customer.name }}
                                 </a>
@@ -214,7 +214,7 @@
 
                         <li class="list-group-item">
 
-                            <a href="{{ url_for('main.customer_details', customer_id=task.customer.id) }}"
+                            <a href="{{ url_for('main.customer_details', customer_code=task.customer.customer_code) }}"
                                class="fw-bold text-decoration-none">
                                 {{ task.title }}
                             </a>
@@ -222,7 +222,7 @@
                             <br>
 
                             <small>
-                                <a href="{{ url_for('main.customer_details', customer_id=task.customer.id) }}"
+                                <a href="{{ url_for('main.customer_details', customer_code=task.customer.customer_code) }}"
                                    class="text-decoration-none">
                                     {{ task.customer.name }}
                                 </a>

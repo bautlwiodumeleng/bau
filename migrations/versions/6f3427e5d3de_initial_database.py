@@ -32,7 +32,7 @@ def upgrade():
     sa.Column('name', sa.String(length=100), nullable=False),
     sa.Column('phone', sa.String(length=20), nullable=True),
     sa.Column('email', sa.String(length=120), nullable=True),
-    sa.Column('company', sa.String(length=100), nullable=True),
+    sa.Column('organisation', sa.String(length=100), nullable=True),
     sa.Column('address', sa.String(length=200), nullable=True),
     sa.Column('notes', sa.Text(), nullable=True),
     sa.Column('created_by', sa.Integer(), nullable=False),
@@ -44,8 +44,8 @@ def upgrade():
     sa.Column('title', sa.String(length=200), nullable=False),
     sa.Column('completed', sa.Boolean(), nullable=True),
     sa.Column('created_at', sa.DateTime(), nullable=False),
-    sa.Column('customer_id', sa.Integer(), nullable=False),
-    sa.ForeignKeyConstraint(['customer_id'], ['customers.id'], ),
+    sa.Column('customer_code', sa.Integer(), nullable=False),
+    sa.ForeignKeyConstraint(['customer_code'], ['customers.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
     # ### end Alembic commands ###

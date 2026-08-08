@@ -11,6 +11,7 @@ from wtforms import (
 from wtforms.validators import DataRequired, Email, EqualTo, Length
 
 
+    
 class RegisterForm(FlaskForm):
 
     username = StringField(
@@ -37,7 +38,40 @@ class RegisterForm(FlaskForm):
     )
 
     submit = SubmitField("Register")
+    
+class ForgotPasswordForm(FlaskForm):
 
+    email = StringField(
+        "Email Address",
+        validators=[DataRequired(), Email()]
+    )
+
+    submit = SubmitField("Send Reset Link")
+
+class ResetPasswordForm(FlaskForm):
+
+    password = PasswordField(
+        "New Password",
+        validators=[
+            DataRequired(),
+            Length(min=6)
+        ]
+    )
+
+    confirm = PasswordField(
+        "Confirm Password",
+        validators=[
+            DataRequired(),
+            EqualTo(
+                "password",
+                message="Passwords must match."
+            )
+        ]
+    )
+
+    submit = SubmitField("Reset Password")    
+    
+    
 
 class LoginForm(FlaskForm): 
     
@@ -70,7 +104,7 @@ class CustomerForm(FlaskForm):
         validators=[Email()]
     )
 
-    company = StringField("Company")
+    organisation_name = StringField("Organisation")
 
     address = StringField("Address")
 
@@ -95,19 +129,19 @@ class ProfileForm(FlaskForm):
         "Email",
         validators=[DataRequired(), Email()]
     )
+    organisation_name = StringField("Organisation Name")
 
-    password = PasswordField(
-        "New Password"
-    )
+    business_phone = StringField("Business Phone")
 
-    confirm = PasswordField(
-        "Confirm New Password",
-        validators=[
-            EqualTo("password", message="Passwords must match.")
-        ]
-    )
+    business_email = StringField("Business Email")
 
-    submit = SubmitField("Update Profile")    
+    business_address = TextAreaField("Business Address")
+
+    website = StringField("Website")
+
+
+    submit = SubmitField("Update Profile") 
+       
 
 class TaskForm(FlaskForm):
 

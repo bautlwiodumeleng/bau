@@ -50,7 +50,7 @@
                         type="text"
                         name="search"
                         class="form-control"
-                        placeholder="🔍 Search by name, phone, email or company"
+                        placeholder="🔍 Search by name, phone, email or organisation"
                         value="{{ request.args.get('search', '') }}">
 
                 </div>
@@ -79,15 +79,15 @@
 
                 <thead class="table-dark">
 
-                    <tr>
-                        <th style="width:160px;">🆔 Customer ID</th>
-                        <th>👤 Name</th>
-                        <th>📞 Phone</th>
-                        <th>📧 Email</th>
-                        <th>🏢 Company</th>
-                        <th>📍 Address</th>
-                        <th class="text-center">Actions</th>
-                    </tr>
+                    <tr class="text-left">              
+                    <th style="width:160px;">Customer ID</th>
+                    <th>👤 Name</th>
+                    <th>📞 Phone</th>
+                    <th>📧 Email</th>
+                    <th> Organisation</th>
+                    <th>📍 Address</th>
+                    <th>Actions</th>
+                </tr> 
 
                 </thead>
 
@@ -105,7 +105,7 @@
 
                         <td>
                             <a href="{{ url_for('main.customer_details',
-                                                customer_id=customer.id) }}"
+                                                customer_code=customer.customer_code) }}"
                                class="fw-bold text-decoration-none">
                                 {{ customer.name }}
                             </a>
@@ -117,10 +117,10 @@
 
                         <td class="align-middle">
 
-                            {% if customer.company %}
+                            {% if customer.organisation_name %}
 
                                 <span class="badge bg-secondary">
-                                    {{ customer.company }}
+                                    {{ customer.organisation_name }}
                                 </span>
 
                             {% else %}
@@ -136,14 +136,14 @@
                                             <td class="text-center">
                             <div class="d-flex justify-content-center">
                                 <a href="{{ url_for('main.restore_customer',
-                                                    customer_id=customer.id) }}"
+                                                    customer_code=customer.customer_code) }}"
                                 class="btn btn-success btn-sm mr-2"
                                 onclick="return confirm('Restore this customer?');">
                                     ↩ Restore
                                 </a>
 
                                 <a href="{{ url_for('main.delete_customer',
-                                                    customer_id=customer.id) }}"
+                                                    customer_code=customer.customer_code) }}"
                                 class="btn btn-danger btn-sm"
                                 onclick="return confirm('⚠️ Permanent Delete\n\nThis customer will be removed forever.\n\nYou will NOT be able to restore it later.\n\nContinue?');">
                                     🗑 Delete
