@@ -1,4 +1,5 @@
-from flask import Flask, app
+
+from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_migrate import Migrate
@@ -10,6 +11,7 @@ migrate = Migrate()
 mail = Mail()
 
 login_manager.login_view = "main.login"
+
 
 def create_app():
     app = Flask(__name__)
@@ -28,4 +30,5 @@ def create_app():
         from . import models
         db.create_all()
 
-    return app 
+    return app
+
