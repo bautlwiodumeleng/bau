@@ -12,6 +12,4 @@ def configure_cloudinary():
     
     
     
-    if ($env:CLOUDINARY_CLOUD_NAME) "dlicjwc"
-if ($env:CLOUDINARY_API_KEY)  "427467312848427" 
-if ($env:CLOUDINARY_API_SECRET)  "CBypz_sxAZhn7A-ofotE2uvVpBI" 
+   
