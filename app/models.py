@@ -92,7 +92,6 @@ class User(UserMixin, db.Model):
     def __repr__(self):
         return f"<User {self.username}>"
 
-
 class Customer(db.Model):
     __tablename__ = "customers"
 
@@ -136,10 +135,66 @@ class Customer(db.Model):
         lazy=True,
         cascade="all, delete-orphan"
     )
+    
+        # NEW relationship
+    documents = db.relationship(
+        "CustomerDocument",
+        backref="customer",
+        lazy=True,
+        cascade="all, delete-orphan"
+    )
 
     def __repr__(self):
         return f"<Customer {self.name}>"
 
+
+class CustomerDocument(db.Model):
+    __tablename__ = "customer_documents"
+
+    id = db.Column(
+        db.Integer,
+        primary_key=True
+    )
+
+    customer_id = db.Column(
+        db.Integer,
+        db.ForeignKey("customers.id"),
+        nullable=False
+    )
+
+    filename = db.Column(
+        db.String(255),
+        nullable=False
+    )
+
+    stored_filename = db.Column(
+        db.String(255),
+        nullable=False
+    )
+    
+    cloudinary_public_id = db.Column(
+    db.String(500),
+    nullable=True
+    )
+    
+    cloudinary_resource_type = db.Column(
+    db.String(50),
+    nullable=True
+    )
+    
+    file_type = db.Column(
+        db.String(100),
+        nullable=True
+    )
+
+    uploaded_at = db.Column(
+        db.DateTime,
+        default=lambda: datetime.now(UTC),
+        nullable=False
+    )
+
+    def __repr__(self):
+        return f"<CustomerDocument {self.filename}>"
 
 class Task(db.Model):
     __tablename__ = "tasks"

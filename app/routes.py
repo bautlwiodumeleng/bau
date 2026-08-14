@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, flash,request, Response, abort
+from flask import Blueprint, render_template, redirect, url_for, flash, request, Response, abort, current_app, send_from_directory
 import csv
 from io import StringIO
 
@@ -8,13 +8,13 @@ from openpyxl import Workbook
 
 from app.forms import ResetPasswordForm
 from .forms import ForgotPasswordForm, RegisterForm, LoginForm, CustomerForm, SearchForm, ProfileForm, TaskForm
-from .models import User, Customer, Task
+from .models import User, Customer, Task, CustomerDocument
 from . import db
 from flask import abort
 from datetime import datetime, UTC, date, timedelta
 
 from openpyxl.styles import PatternFill
-main = Blueprint("main", __name__)
+
 from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill
 from flask import send_file
@@ -24,7 +24,10 @@ from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
 from reportlab.pdfbase import pdfmetrics
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.platypus import Paragraph
-
+import cloudinary
+import cloudinary.uploader
+from .cloudinary_config import configure_cloudinary
+from .models import User, Customer, Task, CustomerDocument
 from openpyxl.utils import get_column_letter
 from io import BytesIO
 from openpyxl.styles import Border, Side
@@ -44,6 +47,7 @@ from reportlab.platypus import (
     Paragraph,
     Spacer
 )
+main = Blueprint("main", __name__)
     
 @main.route("/")
 def home():
@@ -912,7 +916,214 @@ def customer_details(customer_code):
         "customer_details.html",
         customer=customer
     )    
+    
+@main.route("/customer/<string:customer_code>/upload-document", methods=["POST"])
+@login_required
+def upload_customer_document(customer_code):
 
+    # Find the customer and make sure it belongs to the logged-in user
+    customer = Customer.query.filter_by(
+        customer_code=customer_code,
+        created_by=current_user.id
+    ).first_or_404()
+
+    # Check that a file was actually submitted
+    if "document" not in request.files:
+        flash("No file was selected.", "danger")
+        return redirect(
+            url_for(
+                "main.customer_details",
+                customer_code=customer.customer_code
+            )
+        )
+
+    file = request.files["document"]
+
+    # Check that the filename is not empty
+    if file.filename == "":
+        flash("No file was selected.", "danger")
+        return redirect(
+            url_for(
+                "main.customer_details",
+                customer_code=customer.customer_code
+            )
+        )
+
+    # Allowed file types
+    allowed_extensions = {
+        "pdf",
+        "doc",
+        "docx",
+        "xls",
+        "xlsx",
+        "jpg",
+        "jpeg",
+        "png"
+    }
+
+    filename = file.filename
+    extension = filename.rsplit(".", 1)[-1].lower() if "." in filename else ""
+
+    if extension not in allowed_extensions:
+        flash(
+            "File type not allowed. Please upload PDF, Word, Excel, JPG or PNG files.",
+            "danger"
+        )
+        return redirect(
+            url_for(
+                "main.customer_details",
+                customer_code=customer.customer_code
+            )
+        )
+
+    # Generate a secure unique filename
+    import uuid
+    import os
+    from werkzeug.utils import secure_filename
+
+    original_filename = secure_filename(filename)
+
+    stored_filename = (
+        f"{customer.id}_{uuid.uuid4().hex}_{original_filename}"
+    )
+
+    # Configure Cloudinary
+    configure_cloudinary()
+
+    # Upload the file to Cloudinary
+    upload_result = cloudinary.uploader.upload(
+        file,
+        folder=f"customer_documents/{customer.customer_code}",
+        resource_type="auto"
+    )
+
+    cloudinary_public_id = upload_result["public_id"]
+    cloudinary_resource_type = upload_result["resource_type"]
+
+    # Create database record
+    document = CustomerDocument(
+        customer_id=customer.id,
+        filename=original_filename,
+        stored_filename=stored_filename,
+        cloudinary_public_id=cloudinary_public_id,
+        cloudinary_resource_type=cloudinary_resource_type,
+        file_type=file.content_type
+    )
+
+    db.session.add(document)
+    db.session.commit()
+
+    flash("Document uploaded successfully.", "success")
+
+    return redirect(
+        url_for(
+            "main.customer_details",
+            customer_code=customer.customer_code
+        )
+    )    
+@main.route(
+    "/customer/<string:customer_code>/document/<int:document_id>/<string:action>"
+)
+@login_required
+def customer_document(document_id, customer_code, action):
+
+    # Make sure the customer belongs to the logged-in user
+    customer = Customer.query.filter_by(
+        customer_code=customer_code,
+        created_by=current_user.id
+    ).first_or_404()
+
+    # Find the document belonging to this customer
+    document = CustomerDocument.query.filter_by(
+        id=document_id,
+        customer_id=customer.id
+    ).first_or_404()
+
+    # Only allow these two actions
+    if action not in ["view", "download"]:
+        abort(404)
+
+    # Make sure this document has a Cloudinary file
+    if not document.cloudinary_public_id:
+        flash(
+            "This document is not stored in Cloudinary.",
+            "danger"
+        )
+        return redirect(
+            url_for(
+                "main.customer_details",
+                customer_code=customer.customer_code
+            )
+        )
+
+
+    # Configure Cloudinary
+    configure_cloudinary()
+
+    resource_type = document.cloudinary_resource_type or "image"
+
+    # Generate the Cloudinary URL
+    url, options = cloudinary.utils.cloudinary_url(
+        document.cloudinary_public_id,
+        resource_type=resource_type,
+        secure=True
+    )
+
+    if action == "view":
+        return redirect(url)
+
+    # Download
+    download_url, options = cloudinary.utils.cloudinary_url(
+        document.cloudinary_public_id,
+        resource_type=resource_type,
+        secure=True,
+        flags="attachment"
+    )
+
+    return redirect(download_url)
+
+@main.route(
+    "/customer/<string:customer_code>/document/<int:document_id>/delete",
+    methods=["POST"]
+)
+
+@login_required
+def delete_customer_document(customer_code, document_id):
+
+    # Make sure the customer belongs to the logged-in user
+    customer = Customer.query.filter_by(
+        customer_code=customer_code,
+        created_by=current_user.id
+    ).first_or_404()
+
+    # Make sure the document belongs to this customer
+    document = CustomerDocument.query.filter_by(
+        id=document_id,
+        customer_id=customer.id
+    ).first_or_404()
+
+    # Delete the file from Cloudinary
+    if document.cloudinary_public_id:
+        configure_cloudinary()
+
+        cloudinary.uploader.destroy(
+            document.cloudinary_public_id,
+            resource_type=document.cloudinary_resource_type or "image"
+        )
+
+    # Delete database record
+    db.session.delete(document)
+    db.session.commit()
+
+    flash("Document deleted successfully.", "success")
+
+    return redirect(
+        url_for(
+            "main.customer_details",
+            customer_code=customer.customer_code
+        )
+    )    
+    
 
 @main.route("/archive_customer/<string:customer_code>")
 @login_required

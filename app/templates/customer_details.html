@@ -38,41 +38,45 @@
 
     <div class="card-body">
 
+<!-- ========================= -->
+<!-- CUSTOMER INFORMATION -->
+<!-- ========================= -->
+
+<div class="card shadow-sm border-0 mb-4">
+
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">
+            👤 Customer Information
+        </h5>
+    </div>
+
+    <div class="card-body">
+
         <div class="row">
 
             <div class="col-md-6 mb-3">
-
                 <strong>Name</strong><br>
                 {{ customer.name }}
-
             </div>
 
             <div class="col-md-6 mb-3">
-
                 <strong>Phone</strong><br>
                 {{ customer.phone or "Not provided" }}
-
             </div>
 
             <div class="col-md-6 mb-3">
-
                 <strong>Email</strong><br>
                 {{ customer.email or "Not provided" }}
-
             </div>
 
             <div class="col-md-6 mb-3">
-
                 <strong>Organisation</strong><br>
                 {{ customer.organisation_name or "Not provided" }}
-
             </div>
 
             <div class="col-12">
-
                 <strong>Address</strong><br>
                 {{ customer.address or "Not provided" }}
-
             </div>
 
         </div>
@@ -81,14 +85,17 @@
 
 </div>
 
-            <p><strong>Notes:</strong></p>
 
-             <div class="card-header bg-secondary text-white">
+<!-- ========================= -->
+<!-- NOTES -->
+<!-- ========================= -->
 
+<div class="card shadow-sm border-0 mb-4">
+
+    <div class="card-header bg-secondary text-white">
         <h5 class="mb-0">
             📝 Notes
         </h5>
-
     </div>
 
     <div class="card-body">
@@ -111,8 +118,173 @@
 
 </div>
 
-    
-<hr>
+
+<!-- ========================= -->
+<!-- CUSTOMER DOCUMENTS -->
+<!-- ========================= -->
+
+<div class="card shadow-sm border-0 mb-4">
+
+    <div class="card-header bg-info text-white">
+
+        <h5 class="mb-0">
+            📎 Customer Documents
+        </h5>
+
+    </div>
+
+    <div class="card-body">
+
+        <!-- Upload document -->
+
+        <form method="POST"
+              action="{{ url_for('main.upload_customer_document', customer_code=customer.customer_code) }}"
+              enctype="multipart/form-data"
+              class="mb-4">
+
+            <div class="mb-3">
+
+                <label for="document" class="form-label fw-bold">
+                    Upload a document or image
+                </label>
+
+                <input type="file"
+                       class="form-control"
+                       id="document"
+                       name="document"
+                       accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png"
+                       required>
+
+                <div class="form-text">
+                    Allowed: PDF, Word, Excel, JPG and PNG.
+                </div>
+
+            </div>
+
+            <button type="submit"
+                    class="btn btn-info text-white">
+                📤 Upload Document
+            </button>
+
+        </form>
+
+
+        <!-- Existing documents -->
+
+        {% if customer.documents %}
+
+            <h6 class="fw-bold mb-3">
+                📁 Uploaded Documents
+            </h6>
+
+            <div class="list-group">
+
+                {% for document in customer.documents %}
+
+                    <div class="list-group-item">
+
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+
+                            <div>
+
+                                <div class="list-group-item">
+
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+
+        <div>
+
+            <strong>
+                📄 {{ document.filename }}
+            </strong>
+
+            <br>
+
+            <small class="text-muted">
+                Uploaded:
+                {{ document.uploaded_at.strftime("%d %b %Y %H:%M") }}
+            </small>
+
+        </div>
+
+        <div class="d-flex gap-2">
+
+            <a href="{{ url_for(
+                'main.customer_document',
+                customer_code=customer.customer_code,
+                document_id=document.id,
+                action='view'
+            ) }}"
+               class="btn btn-outline-primary btn-sm"
+               target="_blank">
+                👁 View
+            </a>
+
+            <a href="{{ url_for(
+                'main.customer_document',
+                customer_code=customer.customer_code,
+                document_id=document.id,
+                action='download'
+            ) }}"
+               class="btn btn-outline-success btn-sm">
+                📥 Download
+            </a>
+            
+            <form method="POST"
+                  action="{{ url_for(
+          'main.delete_customer_document',
+          customer_code=customer.customer_code,
+          document_id=document.id
+      ) }}"
+      class="d-inline"
+      onsubmit="return confirm('Are you sure you want to delete this document?');">
+
+    <button type="submit"
+            class="btn btn-outline-danger btn-sm">
+        🗑 Delete
+    </button>
+
+</form>
+            
+
+        </div>
+
+    </div>
+
+</div>
+
+                                <br>
+
+                                <small class="text-muted">
+                                    Uploaded:
+                                    {{ document.uploaded_at.strftime("%d %b %Y %H:%M") }}
+                                </small>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="text-muted">
+                📂 No documents have been uploaded for this customer yet.
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+<!-- ========================= -->
+<!-- TASKS -->
+<!-- ========================= -->
 
 <div class="d-flex justify-content-between align-items-center mb-3">
 

@@ -1,4 +1,5 @@
 
+from dotenv import load_dotenv
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
@@ -14,6 +15,7 @@ login_manager.login_view = "main.login"
 
 
 def create_app():
+    load_dotenv()
     app = Flask(__name__)
 
     app.config.from_object("config.Config")
