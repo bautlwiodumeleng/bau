@@ -6,13 +6,26 @@
 
 <div class="container mt-4">
 
-    <h2>My Profile</h2>
+   
+    <div class="d-flex align-items-center mb-3">
+    <h2 class="mb-0">My Profile</h2>
+
+    {% if current_user.organisation_logo %}
+        <img
+            src="{{ current_user.organisation_logo }}"
+            alt="Organisation Logo"
+            style="width: 120px; height: 80px; object-fit: contain;"
+        >
+    {% endif %}
+</div>
+ 
+  
 
     <div class="card shadow">
 
         <div class="card-body">
 
-            <form method="POST">
+            <form method="POST" enctype="multipart/form-data">
                 {{ form.hidden_tag() }}
                 
 
@@ -30,14 +43,23 @@
                 <div class="mb-3">
                     {{ form.organisation_name.label(class="form-label fw-bold") }}
                     {{ form.organisation_name(class="form-control") }}
+                    
                     {{ form.business_phone.label(class="form-label fw-bold") }}
                     {{ form.business_phone(class="form-control") }}
+
                     {{ form.business_email.label(class="form-label fw-bold") }}
                     {{ form.business_email(class="form-control") }}
+
                     {{ form.business_address.label(class="form-label fw-bold") }}
                     {{ form.business_address(class="form-control", rows="3") }}
+
                     {{ form.website.label(class="form-label fw-bold") }}
                     {{ form.website(class="form-control") }}
+                    
+                 <div class="mb-3">   
+                     {{ form.organisation_logo.label(class="form-label fw-bold") }}
+                     {{ form.organisation_logo(class="form-control", accept=".jpg,.jpeg,.png") }}
+                </div>         
                     
                 </div>
 

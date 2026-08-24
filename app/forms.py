@@ -1,4 +1,5 @@
 from flask_wtf import FlaskForm
+from flask_wtf.file import FileField, FileAllowed
 from wtforms import (
     BooleanField,
     StringField,
@@ -117,7 +118,7 @@ class SearchForm(FlaskForm):
     search = StringField("Search")
 
     submit = SubmitField("Search")
-    
+
 class ProfileForm(FlaskForm):
 
     username = StringField(
@@ -129,18 +130,40 @@ class ProfileForm(FlaskForm):
         "Email",
         validators=[DataRequired(), Email()]
     )
-    organisation_name = StringField("Organisation Name")
 
-    business_phone = StringField("Business Phone")
+    organisation_name = StringField(
+        "Organisation Name"
+    )
 
-    business_email = StringField("Business Email")
+    business_phone = StringField(
+        "Business Phone"
+    )
 
-    business_address = TextAreaField("Business Address")
+    business_email = StringField(
+        "Business Email"
+    )
 
-    website = StringField("Website")
+    business_address = TextAreaField(
+        "Business Address"
+    )
 
+    website = StringField(
+        "Website"
+    )
 
-    submit = SubmitField("Update Profile") 
+    organisation_logo = FileField(
+        "Organisation Logo",
+        validators=[
+            FileAllowed(
+                ["jpg", "jpeg", "png"],
+                "Only JPG, JPEG and PNG images are allowed."
+            )
+        ]
+    )
+
+    submit = SubmitField(
+        "Update Profile"
+    )
        
 
 class TaskForm(FlaskForm):

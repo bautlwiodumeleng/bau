@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request, Response, abort, current_app, send_from_directory
 import csv
 from io import StringIO
+import requests
 
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, logout_user, login_required, current_user
@@ -45,8 +46,11 @@ from reportlab.platypus import (
     Table,
     TableStyle,
     Paragraph,
-    Spacer
+    Spacer,
+    Image,
+    HRFlowable
 )
+
 main = Blueprint("main", __name__)
     
 @main.route("/")
@@ -638,38 +642,7 @@ def export_xlsx():
             "Content-Disposition": "attachment; filename=customers.xlsx"
         }
     ) 
-    
-def format_customer_code(customer_code):
-    return f"{customer_code}"
 
-
-def get_organisation_name():
-    return current_user.organisation_name or "BAU Technologies  (Pty) Ltd"
-
-def pdf_footer(canvas, doc):
-    canvas.saveState()
-
-    width, height = landscape(A4)
-
-    canvas.setFont("Helvetica", 8)
-
-    # Footer text
-    canvas.drawString(
-        20,
-        15,
-        "Powered by BAU Technologies  (Pty) Ltd"
-    )
-
-    # Page number
-    canvas.drawRightString(
-        width - 20,
-        15,
-        f"Page {doc.page}"
-    )
-
-    canvas.restoreState()
-
-    
 @main.route("/export/pdf")
 @login_required
 def export_pdf():
@@ -680,7 +653,7 @@ def export_pdf():
     ).all()
 
     print("PDF Export customer count:", len(customers))
-    
+
     customer_count = len(customers)
 
     output = BytesIO()
@@ -701,14 +674,14 @@ def export_pdf():
     # ----------------------------------------------------
 
     organisation_style = ParagraphStyle(
-        "organisation",
-        parent=styles["Normal"],
-        fontName="Helvetica",
-        fontSize=8,
-        leading=9,
-        alignment=1,          # Centre
-        spaceAfter=1
-    )
+    "organisation",
+    parent=styles["Normal"],
+    fontName="Helvetica",
+    fontSize=10,
+    leading=11,
+    alignment=1,
+    spaceAfter=1
+)
 
     title_style = ParagraphStyle(
         "title",
@@ -726,7 +699,7 @@ def export_pdf():
         fontName="Helvetica",
         fontSize=8,
         leading=9,
-        alignment=0,          # Left
+        alignment=0,
         spaceAfter=2
     )
 
@@ -757,9 +730,80 @@ def export_pdf():
     if current_user.website:
         organisation_info += f"Website: {current_user.website}<br/>"
 
-    elements.append(
-        Paragraph(organisation_info, organisation_style)
+    # ----------------------------------------------------
+    # Organisation Logo
+    # ----------------------------------------------------
+
+    logo = None
+
+    if current_user.organisation_logo:
+        try:
+            logo_response = requests.get(
+                current_user.organisation_logo,
+                timeout=10
+            )
+
+            logo_response.raise_for_status()
+
+            logo_file = BytesIO(logo_response.content)
+
+            logo = Image(
+                logo_file,
+                width=70,
+                height=50
+            )
+
+        except Exception as e:
+            print(
+                "Could not load organisation logo:",
+                e
+            )
+
+    # ----------------------------------------------------
+    # Organisation Header Table
+    # ----------------------------------------------------
+
+    if logo:
+
+        header_table = Table(
+            [
+                [
+                    logo,
+                    Paragraph(
+                        organisation_info,
+                        organisation_style
+                    )
+                ]
+            ],
+            colWidths=[90, 600]
+        )
+
+    else:
+
+        header_table = Table(
+            [
+                [
+                    Paragraph(
+                        organisation_info,
+                        organisation_style
+                    )
+                ]
+            ],
+            colWidths=[690]
+        )
+
+    header_table.setStyle(
+        TableStyle([
+            ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+            ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+            ("LEFTPADDING", (0, 0), (-1, -1), 2),
+            ("RIGHTPADDING", (0, 0), (-1, -1), 2),
+            ("TOPPADDING", (0, 0), (-1, -1), 0),
+            ("BOTTOMPADDING", (0, 0), (-1, -1), 0),
+        ])
     )
+
+    elements.append(header_table)
 
     elements.append(Spacer(1, 3))
 
@@ -789,7 +833,7 @@ def export_pdf():
     )
 
     # ----------------------------------------------------
-    # Report Information (Only Once)
+    # Report Information
     # ----------------------------------------------------
 
     generated = datetime.now().strftime("%d %b %Y %H:%M")
@@ -823,6 +867,7 @@ def export_pdf():
     ]
 
     for customer in customers:
+
         table_data.append(
             [
                 customer.customer_code or "",
@@ -833,7 +878,6 @@ def export_pdf():
                 customer.address or ""
             ]
         )
-
 
     customer_table = Table(
         table_data,
@@ -870,19 +914,36 @@ def export_pdf():
             ("BOTTOMPADDING", (0, 0), (-1, -1), 3),
         ])
     )
-    # Zebra striping
+
+    # ----------------------------------------------------
+    # Zebra Striping
+    # ----------------------------------------------------
+
     for row in range(1, len(table_data)):
+
         if row % 2 == 0:
+            organisation_style = ParagraphStyle(
+                "organisation",
+                parent=styles["Normal"],
+                fontName="Helvetica",
+                fontSize=10,
+                leading=11,
+                alignment=1,
+                spaceAfter=1
+            )
             customer_table.setStyle(
                 TableStyle([
-                    ("BACKGROUND", (0, row), (-1, row), colors.whitesmoke)
+                    (
+                        "BACKGROUND",
+                        (0, row),
+                        (-1, row),
+                        colors.whitesmoke
+                    )
                 ])
             )
-    
-
 
     elements.append(customer_table)
-    
+
     # ----------------------------------------------------
     # Build PDF
     # ----------------------------------------------------
@@ -901,11 +962,55 @@ def export_pdf():
         download_name="customer_report.pdf",
         mimetype="application/pdf"
     )
-        
+
+
+# --------------------------------------------------------
+# Helper Functions
+# --------------------------------------------------------
+
+def format_customer_code(customer_code):
+    return f"{customer_code}"
+
+
+def get_organisation_name():
+    return (
+        current_user.organisation_name
+        or "BAU Technologies (Pty) Ltd"
+    )
+
+
+def pdf_footer(canvas, doc):
+
+    canvas.saveState()
+
+    width, height = landscape(A4)
+
+    canvas.setFont("Helvetica", 8)
+
+    # Footer text
+    canvas.drawString(
+        20,
+        15,
+        "Powered by BAU Technologies (Pty) Ltd"
+    )
+
+    # Page number
+    canvas.drawRightString(
+        width - 20,
+        15,
+        f"Page {doc.page}"
+    )
+
+    canvas.restoreState()
+
+
+# --------------------------------------------------------
+# Customer Details
+# --------------------------------------------------------
+
 @main.route("/customer/<string:customer_code>")
 @login_required
 def customer_details(customer_code):
-
 
     customer = Customer.query.filter_by(
         customer_code=customer_code,
@@ -915,9 +1020,12 @@ def customer_details(customer_code):
     return render_template(
         "customer_details.html",
         customer=customer
-    )    
-    
-@main.route("/customer/<string:customer_code>/upload-document", methods=["POST"])
+    )
+
+@main.route(
+    "/customer/<string:customer_code>/upload-document",
+    methods=["POST"]
+    )
 @login_required
 def upload_customer_document(customer_code):
 
@@ -962,7 +1070,12 @@ def upload_customer_document(customer_code):
     }
 
     filename = file.filename
-    extension = filename.rsplit(".", 1)[-1].lower() if "." in filename else ""
+
+    extension = (
+        filename.rsplit(".", 1)[-1].lower()
+        if "." in filename
+        else ""
+    )
 
     if extension not in allowed_extensions:
         flash(
@@ -977,10 +1090,6 @@ def upload_customer_document(customer_code):
         )
 
     # Generate a secure unique filename
-    import uuid
-    import os
-    from werkzeug.utils import secure_filename
-
     original_filename = secure_filename(filename)
 
     stored_filename = (
@@ -990,7 +1099,7 @@ def upload_customer_document(customer_code):
     # Configure Cloudinary
     configure_cloudinary()
 
-    # Upload the file to Cloudinary
+    # Upload the customer document to Cloudinary
     upload_result = cloudinary.uploader.upload(
         file,
         folder=f"customer_documents/{customer.customer_code}",
@@ -1013,17 +1122,18 @@ def upload_customer_document(customer_code):
     db.session.add(document)
     db.session.commit()
 
-    flash("Document uploaded successfully.", "success")
+    flash(
+        "Document uploaded successfully.",
+        "success"
+    )
 
     return redirect(
         url_for(
             "main.customer_details",
             customer_code=customer.customer_code
         )
-    )    
-@main.route(
-    "/customer/<string:customer_code>/document/<int:document_id>/<string:action>"
-)
+    )
+
 @login_required
 def customer_document(document_id, customer_code, action):
 
@@ -1197,8 +1307,6 @@ def delete_customer(customer_code):
     return redirect(url_for("main.archived_customers"))
 
 
-
-
 @main.route("/profile", methods=["GET", "POST"])
 @login_required
 def profile():
@@ -1231,6 +1339,15 @@ def profile():
         current_user.business_email = form.business_email.data
         current_user.business_address = form.business_address.data
         current_user.website = form.website.data
+        # Upload organisation logo to Cloudinary
+        if form.organisation_logo.data:
+            upload_result = cloudinary.uploader.upload(
+                form.organisation_logo.data,
+                folder=f"organisation_logos/{current_user.id}",
+                resource_type="image"
+            )
+
+            current_user.organisation_logo = upload_result["secure_url"]
 
         try:
             db.session.commit()
