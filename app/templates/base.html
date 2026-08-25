@@ -35,8 +35,8 @@
         <a
             class="navbar-brand fw-bold"
             href="{{ url_for('main.dashboard') }}"
-        >
-            📋 Customer Portal
+         >
+            📋 Customer Management Portal
         </a>
 
         <!-- Mobile Menu Button -->
@@ -58,7 +58,7 @@
             id="navbarNav"
         >
 
-            <ul class="navbar-nav ms-auto">
+            <ul class="navbar-nav ms-auto gap-1"></ul>
 
                 {% if current_user.is_authenticated %}
 
