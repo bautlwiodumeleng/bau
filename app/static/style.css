@@ -40,3 +40,29 @@
         transform: translateY(0);
     }
 }
+
+/* Keep cards and customer information white */
+
+.card {
+    background-color: #ffffff;
+    border: 1px solid #dce4ea;
+    border-radius: 10px;
+}
+
+/* Keep customer tables white */
+
+.table {
+    background-color: #ffffff;
+}
+
+
+.card {
+    background-color: #ffffff !important;
+    border: 1px solid #dce4ea !important;
+    border-radius: 10px;
+}
+
+body {
+    background-color: #eef3f7 !important;
+}
+

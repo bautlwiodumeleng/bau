@@ -1,0 +1,262 @@
+{% extends "base.html" %}
+
+{% block title %}Customer Management Portal{% endblock %}
+
+{% block content %}
+
+<div style="max-width: 1000px; margin: 40px auto; padding: 20px;">
+
+    <!-- Header -->
+
+    <div style="text-align: center; margin-bottom: 45px;">
+
+        <h1 style="font-weight: bold;">
+            BAU Technologies (Pty) Ltd
+        </h1>
+
+        <h2 style="margin-top: 15px;">
+            A Customer Management Portal for Small and Growing Businesses
+        </h2>
+
+        <p style="font-size: 18px; margin-top: 20px;">
+            Manage your customers, documents and business information
+            from one organised portal.
+        </p>
+
+    </div>
+
+
+    <!-- Introduction -->
+
+    <div style="margin-bottom: 35px;">
+
+        <h3>What is the Customer Management Portal?</h3>
+
+        <p>
+            The BAU Technologies Customer Management Portal provides
+            businesses with a central place to organise and manage
+            their customer information.
+        </p>
+
+        <p>
+            Instead of relying on scattered notebooks, spreadsheets,
+            emails and separate files, businesses can keep important
+            customer information organised within one portal.
+        </p>
+
+    </div>
+
+
+    <!-- Customer Management -->
+
+    <div style="margin-bottom: 35px;">
+
+        <h3>Customer Management</h3>
+
+        <p>
+            Create and maintain detailed customer records containing
+            important information such as:
+        </p>
+
+        <ul>
+            <li>Customer ID</li>
+            <li>Customer name</li>
+            <li>Telephone number</li>
+            <li>Email address</li>
+            <li>Organisation</li>
+            <li>Business address</li>
+            <li>Customer notes</li>
+        </ul>
+
+        <p>
+            Customers can be searched, updated and managed whenever
+            their information changes.
+        </p>
+
+    </div>
+
+
+    <!-- Document Management -->
+
+    <div style="margin-bottom: 35px;">
+
+        <h3>Customer Document Management</h3>
+
+        <p>
+            Keep documents associated with the correct customer record.
+        </p>
+
+        <p>
+            The portal supports common file types including:
+        </p>
+
+        <ul>
+            <li>PDF</li>
+            <li>Microsoft Word</li>
+            <li>Microsoft Excel</li>
+            <li>JPG and JPEG images</li>
+            <li>PNG images</li>
+        </ul>
+
+        <p>
+            Customer documents can be uploaded, stored and accessed
+            when required.
+        </p>
+
+    </div>
+
+
+    <!-- Business Profile -->
+
+    <div style="margin-bottom: 35px;">
+
+        <h3>Business Profile & Branding</h3>
+
+        <p>
+            Businesses can customise their profile with their own
+            business information, including:
+        </p>
+
+        <ul>
+            <li>Business name</li>
+            <li>Business telephone</li>
+            <li>Business email</li>
+            <li>Business address</li>
+            <li>Website</li>
+            <li>Company logo</li>
+        </ul>
+
+        <p>
+            Your organisation information and logo can also appear
+            on generated PDF reports.
+        </p>
+
+    </div>
+
+
+    <!-- Reports -->
+
+    <div style="margin-bottom: 35px;">
+
+        <h3>Professional Reports</h3>
+
+        <p>
+            Customer information can be exported for business use.
+        </p>
+
+        <ul>
+            <li>PDF customer reports</li>
+            <li>Microsoft Excel exports</li>
+            <li>Organisation information in reports</li>
+            <li>Company branding and logo on PDF reports</li>
+        </ul>
+
+        <p>
+            This makes it easier to review, share and maintain
+            professional customer information.
+        </p>
+
+    </div>
+
+
+    <!-- User Accounts -->
+
+    <div style="margin-bottom: 35px;">
+
+        <h3>User Accounts</h3>
+
+        <p>
+            Each business user has their own account and can manage
+            the customer information associated with that account.
+        </p>
+
+        <p>
+            The portal provides user login and password recovery
+            functionality to help users securely access their accounts.
+        </p>
+
+    </div>
+
+
+    <!-- Who is it for? -->
+
+    <div style="margin-bottom: 35px;">
+
+        <h3>Who Is It For?</h3>
+
+        <p>
+            The Customer Management Portal is suitable for small
+            and growing businesses that want a simple way to organise
+            their customer information.
+        </p>
+
+        <ul>
+            <li>Small businesses</li>
+            <li>Growing businesses</li>
+            <li>Service providers</li>
+            <li>Consultants</li>
+            <li>Independent professionals</li>
+            <li>Businesses managing customer documents</li>
+        </ul>
+
+    </div>
+
+
+    <!-- Benefits -->
+
+    <div style="margin-bottom: 40px;">
+
+        <h3>Key Benefits</h3>
+
+        <ul>
+            <li>Keep customer information organised</li>
+            <li>Find customer information quickly</li>
+            <li>Keep customer documents together</li>
+            <li>Search and update customer records easily</li>
+            <li>Archive customers when necessary</li>
+            <li>Create professional PDF reports</li>
+            <li>Export information to Excel</li>
+            <li>Maintain your business profile and branding</li>
+        </ul>
+
+    </div>
+
+
+    <!-- Closing -->
+
+    <div style="
+        text-align: center;
+        padding: 35px 20px;
+        border-top: 1px solid #ddd;
+        margin-top: 30px;
+    ">
+
+        <h2 style="font-weight: bold;">
+            Manage Your Customers More Professionally
+        </h2>
+
+        <p style="font-size: 17px; margin-top: 15px;">
+            Start organising your customer information with the
+            BAU Technologies Customer Management Portal.
+        </p>
+
+        <div style="margin-top: 25px;">
+
+            <a href="{{ url_for('main.register') }}"
+               class="btn btn-primary btn-lg">
+                Create Your Account
+            </a>
+
+            <a href="{{ url_for('main.login') }}"
+               class="btn btn-secondary btn-lg"
+               style="margin-left: 10px;">
+                Login
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -38,7 +38,7 @@ class RegisterForm(FlaskForm):
         ]
     )
 
-    submit = SubmitField("Register")
+    submit = SubmitField("Create Your Account")
     
 class ForgotPasswordForm(FlaskForm):
 

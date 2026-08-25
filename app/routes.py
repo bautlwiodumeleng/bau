@@ -57,6 +57,9 @@ main = Blueprint("main", __name__)
 def home():
     return render_template("home.html")
 
+@main.route("/portal-information")
+def portal_information():
+    return render_template("portal_information.html")
 
 @main.route("/register", methods=["GET", "POST"])
 def register():
@@ -642,15 +645,59 @@ def export_xlsx():
             "Content-Disposition": "attachment; filename=customers.xlsx"
         }
     ) 
+    
+@main.route("/export/customers")
+@login_required
+def export_customers():
+    return render_template("export_customers.html")
 
 @main.route("/export/pdf")
 @login_required
 def export_pdf():
 
-    customers = Customer.query.filter_by(
+    month = request.args.get("month", type=int)
+    year = request.args.get("year", type=int)
+
+    query = Customer.query.filter_by(
         created_by=current_user.id,
         is_archived=False
-    ).all()
+    )
+
+    if month and year:
+
+        start_date = datetime(
+            year,
+            month,
+            1,
+            tzinfo=UTC
+        )
+
+        if month == 12:
+            end_date = datetime(
+                year + 1,
+                1,
+                1,
+                tzinfo=UTC
+            )
+        else:
+            end_date = datetime(
+                year,
+                month + 1,
+                1,
+                tzinfo=UTC
+            )
+
+        query = query.filter(
+            Customer.created_at >= start_date,
+            Customer.created_at < end_date
+        )
+
+    customers = query.all()
+
+    print(
+        "PDF Export customer count:",
+        len(customers)
+    )
 
     print("PDF Export customer count:", len(customers))
 
@@ -661,9 +708,9 @@ def export_pdf():
     doc = SimpleDocTemplate(
         output,
         pagesize=landscape(A4),
-        leftMargin=18,
+        leftMargin=5,
         rightMargin=18,
-        topMargin=10,
+        topMargin=5,
         bottomMargin=18
     )
 
@@ -681,7 +728,7 @@ def export_pdf():
     leading=11,
     alignment=1,
     spaceAfter=1
-)
+    )
 
     title_style = ParagraphStyle(
         "title",
@@ -791,13 +838,14 @@ def export_pdf():
             ],
             colWidths=[690]
         )
-
     header_table.setStyle(
         TableStyle([
-            ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
-            ("ALIGN", (0, 0), (-1, -1), "CENTER"),
-            ("LEFTPADDING", (0, 0), (-1, -1), 2),
-            ("RIGHTPADDING", (0, 0), (-1, -1), 2),
+            ("VALIGN", (0, 0), (-1, -1), "TOP"),
+            ("ALIGN", (0, 0), (0, 0), "LEFT"),
+            ("ALIGN", (1, 0), (1, 0), "LEFT"),
+
+            ("LEFTPADDING", (0, 0), (-1, -1), 0),
+            ("RIGHTPADDING", (0, 0), (-1, -1), 0),
             ("TOPPADDING", (0, 0), (-1, -1), 0),
             ("BOTTOMPADDING", (0, 0), (-1, -1), 0),
         ])
@@ -824,10 +872,27 @@ def export_pdf():
     # ----------------------------------------------------
     # Report Title
     # ----------------------------------------------------
+    if month and year:
+        report_period = datetime(
+            year,
+            month,
+            1
+        ).strftime("%B %Y")
+
+        report_title = (
+            f"<b>CUSTOMER MANAGEMENT SYSTEM — "
+            f"{report_period}</b>"
+        )
+
+    else:
+        report_title = (
+            "<b>CUSTOMER MANAGEMENT SYSTEM — "
+            "All Customers</b>"
+        )
 
     elements.append(
         Paragraph(
-            "<b>CUSTOMER MANAGEMENT SYSTEM</b>",
+            report_title,
             title_style
         )
     )
@@ -1002,6 +1067,8 @@ def pdf_footer(canvas, doc):
     )
 
     canvas.restoreState()
+    
+    
 
 
 # --------------------------------------------------------
