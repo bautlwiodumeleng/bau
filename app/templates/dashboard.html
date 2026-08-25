@@ -5,23 +5,28 @@
 
 {% block content %}
 
-<div class="container mt-4">
-
-    <h2 class="mb-4">
+<div class="mb-4">
+    <h2 class="fw-bold mb-1">
         Welcome, {{ current_user.username }} 👋
     </h2>
 
-    <div class="row">
+    <p class="text-muted mb-0">
+        Here's an overview of your customer management activity.
+    </p>
+</div>
 
+   <div class="row">
+
+    <!-- Customers -->
     <div class="col-md-3 mb-3">
-        <div class="card shadow border-0 h-100">
+        <div class="card shadow-sm h-100">
             <div class="card-body text-center">
 
                 <div class="display-5 mb-2">
                     👥
                 </div>
 
-                <h6 class="text-muted">
+                <h6 class="fw-semibold text-muted mb-1">
                     Customers
                 </h6>
 
@@ -33,15 +38,16 @@
         </div>
     </div>
 
+    <!-- Organisations -->
     <div class="col-md-3 mb-3">
-        <div class="card shadow border-0 h-100">
+        <div class="card shadow-sm h-100">
             <div class="card-body text-center">
 
                 <div class="display-5 mb-2">
                     🏢
                 </div>
 
-                <h6 class="text-muted">
+                <h6 class="fw-semibold text-muted mb-1">
                     Organisations
                 </h6>
 
@@ -53,15 +59,16 @@
         </div>
     </div>
 
+    <!-- New This Month -->
     <div class="col-md-3 mb-3">
-        <div class="card shadow border-0 h-100">
+        <div class="card shadow-sm h-100">
             <div class="card-body text-center">
 
                 <div class="display-5 mb-2">
                     📅
                 </div>
 
-                <h6 class="text-muted">
+                <h6 class="fw-semibold text-muted mb-1">
                     New This Month
                 </h6>
 
@@ -73,15 +80,16 @@
         </div>
     </div>
 
+    <!-- Tasks -->
     <div class="col-md-3 mb-3">
-        <div class="card shadow border-0 h-100">
+        <div class="card shadow-sm h-100">
             <div class="card-body text-center">
 
                 <div class="display-5 mb-2">
                     📋
                 </div>
 
-                <h6 class="text-muted">
+                <h6 class="fw-semibold text-muted mb-1">
                     Tasks
                 </h6>
 
@@ -92,6 +100,8 @@
             </div>
         </div>
     </div>
+
+</div>
 
 </div>
 
