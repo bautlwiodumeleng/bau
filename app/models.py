@@ -4,8 +4,16 @@ from datetime import datetime, UTC
 from itsdangerous import URLSafeTimedSerializer
 from flask import current_app
 
+from datetime import datetime
+import secrets
+
+from flask_login import UserMixin
+
+from . import db
+
 
 class User(UserMixin, db.Model):
+
     __tablename__ = "users"
 
     id = db.Column(db.Integer, primary_key=True)
@@ -74,6 +82,7 @@ class User(UserMixin, db.Model):
     )
 
     def get_reset_token(self):
+
         serializer = URLSafeTimedSerializer(
             current_app.config["SECRET_KEY"]
         )
@@ -85,27 +94,31 @@ class User(UserMixin, db.Model):
 
     @staticmethod
     def verify_reset_token(token, expires_sec=1800):
+
         serializer = URLSafeTimedSerializer(
             current_app.config["SECRET_KEY"]
         )
 
         try:
+
             email = serializer.loads(
                 token,
                 salt="password-reset",
                 max_age=expires_sec
             )
+
         except Exception:
+
             return None
 
         return User.query.filter_by(
             email=email
         ).first()
 
-    def __repr__(self):
-        return f"<User {self.username}>"
 
 
+
+# Your existing Customer class starts here
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))

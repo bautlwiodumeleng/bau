@@ -11,8 +11,7 @@ from wtforms import (
     )
 from wtforms.validators import DataRequired, Email, EqualTo, Length
 
-
-    
+   
 class RegisterForm(FlaskForm):
 
     username = StringField(
@@ -27,7 +26,7 @@ class RegisterForm(FlaskForm):
 
     password = PasswordField(
         "Password",
-        validators=[DataRequired(), Length(min=6)]
+        validators=[DataRequired(), Length(min=8)]
     )
 
     confirm = PasswordField(
@@ -55,7 +54,7 @@ class ResetPasswordForm(FlaskForm):
         "New Password",
         validators=[
             DataRequired(),
-            Length(min=6)
+            Length(min=8)
         ]
     )
 
