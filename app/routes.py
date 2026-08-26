@@ -4,6 +4,8 @@ from io import StringIO
 import requests
 
 from werkzeug.security import generate_password_hash, check_password_hash
+import uuid
+from werkzeug.utils import secure_filename
 from flask_login import login_user, logout_user, login_required, current_user
 from openpyxl import Workbook
 
@@ -25,6 +27,8 @@ from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
 from reportlab.pdfbase import pdfmetrics
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.platypus import Paragraph
+
+
 import cloudinary
 import cloudinary.uploader
 from .cloudinary_config import configure_cloudinary
@@ -1200,7 +1204,10 @@ def upload_customer_document(customer_code):
             customer_code=customer.customer_code
         )
     )
-
+    
+@main.route(
+    "/customer/<string:customer_code>/document/<int:document_id>/<string:action>"
+)
 @login_required
 def customer_document(document_id, customer_code, action):
 
@@ -1219,20 +1226,6 @@ def customer_document(document_id, customer_code, action):
     # Only allow these two actions
     if action not in ["view", "download"]:
         abort(404)
-
-    # Make sure this document has a Cloudinary file
-    if not document.cloudinary_public_id:
-        flash(
-            "This document is not stored in Cloudinary.",
-            "danger"
-        )
-        return redirect(
-            url_for(
-                "main.customer_details",
-                customer_code=customer.customer_code
-            )
-        )
-
 
     # Configure Cloudinary
     configure_cloudinary()

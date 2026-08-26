@@ -6,48 +6,35 @@
 
 <div class="container mt-4">
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
+
+<!-- Page Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
 
     <div>
 
-        <h2 class="fw-bold">
-            👤 {{ customer.name }}
+        <h2 class="fw-bold mb-1">
+            👤 Customer Details
         </h2>
 
         <p class="text-muted mb-0">
-            Customer Information
+            {{ customer.name }}
         </p>
 
     </div>
 
 </div>
 
-    <div class="card shadow">
 
-        <div class="card-body">
-
-            <div class="card shadow-sm border-0 mb-4">
-
-    <div class="card-header bg-primary text-white">
-
-        <h5 class="mb-0">
-            👤 Customer Information
-        </h5>
-
-    </div>
-
-    <div class="card-body">
-
-<!-- ========================= -->
 <!-- CUSTOMER INFORMATION -->
-<!-- ========================= -->
-
 <div class="card shadow-sm border-0 mb-4">
 
-    <div class="card-header bg-primary text-white">
+    <div class="card-header text-white"
+         style="background-color:#0b1f3a;">
+
         <h5 class="mb-0">
             👤 Customer Information
         </h5>
+
     </div>
 
     <div class="card-body">
@@ -55,28 +42,57 @@
         <div class="row">
 
             <div class="col-md-6 mb-3">
+
                 <strong>Name</strong><br>
+
                 {{ customer.name }}
+
             </div>
 
+
             <div class="col-md-6 mb-3">
+
                 <strong>Phone</strong><br>
+
                 {{ customer.phone or "Not provided" }}
+
             </div>
 
+
             <div class="col-md-6 mb-3">
+
                 <strong>Email</strong><br>
+
                 {{ customer.email or "Not provided" }}
+
             </div>
 
+
             <div class="col-md-6 mb-3">
+
                 <strong>Organisation</strong><br>
-                {{ customer.organisation_name or "Not provided" }}
+
+                {% if customer.organisation_name %}
+
+                    <span class="badge bg-secondary">
+                        {{ customer.organisation_name }}
+                    </span>
+
+                {% else %}
+
+                    Not provided
+
+                {% endif %}
+
             </div>
+
 
             <div class="col-12">
+
                 <strong>Address</strong><br>
+
                 {{ customer.address or "Not provided" }}
+
             </div>
 
         </div>
@@ -86,16 +102,15 @@
 </div>
 
 
-<!-- ========================= -->
 <!-- NOTES -->
-<!-- ========================= -->
-
 <div class="card shadow-sm border-0 mb-4">
 
     <div class="card-header bg-secondary text-white">
+
         <h5 class="mb-0">
             📝 Notes
         </h5>
+
     </div>
 
     <div class="card-body">
@@ -119,13 +134,11 @@
 </div>
 
 
-<!-- ========================= -->
 <!-- CUSTOMER DOCUMENTS -->
-<!-- ========================= -->
-
 <div class="card shadow-sm border-0 mb-4">
 
-    <div class="card-header bg-info text-white">
+    <div class="card-header text-white"
+         style="background-color:#0b1f3a;">
 
         <h5 class="mb-0">
             📎 Customer Documents
@@ -135,16 +148,17 @@
 
     <div class="card-body">
 
-        <!-- Upload document -->
-
+        <!-- Upload Document -->
         <form method="POST"
-              action="{{ url_for('main.upload_customer_document', customer_code=customer.customer_code) }}"
+              action="{{ url_for('main.upload_customer_document',
+                                 customer_code=customer.customer_code) }}"
               enctype="multipart/form-data"
               class="mb-4">
 
             <div class="mb-3">
 
-                <label for="document" class="form-label fw-bold">
+                <label for="document"
+                       class="form-label fw-bold">
                     Upload a document or image
                 </label>
 
@@ -162,15 +176,14 @@
             </div>
 
             <button type="submit"
-                    class="btn btn-info text-white">
+                    class="btn btn-primary">
                 📤 Upload Document
             </button>
 
         </form>
 
 
-        <!-- Existing documents -->
-
+        <!-- Existing Documents -->
         {% if customer.documents %}
 
             <h6 class="fw-bold mb-3">
@@ -185,79 +198,66 @@
 
                         <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
 
+                            <!-- Document Information -->
                             <div>
 
-                                <div class="list-group-item">
-
-    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-
-        <div>
-
-            <strong>
-                📄 {{ document.filename }}
-            </strong>
-
-            <br>
-
-            <small class="text-muted">
-                Uploaded:
-                {{ document.uploaded_at.strftime("%d %b %Y %H:%M") }}
-            </small>
-
-        </div>
-
-        <div class="d-flex gap-2">
-
-            <a href="{{ url_for(
-                'main.customer_document',
-                customer_code=customer.customer_code,
-                document_id=document.id,
-                action='view'
-            ) }}"
-               class="btn btn-outline-primary btn-sm"
-               target="_blank">
-                👁 View
-            </a>
-
-            <a href="{{ url_for(
-                'main.customer_document',
-                customer_code=customer.customer_code,
-                document_id=document.id,
-                action='download'
-            ) }}"
-               class="btn btn-outline-success btn-sm">
-                📥 Download
-            </a>
-            
-            <form method="POST"
-                  action="{{ url_for(
-          'main.delete_customer_document',
-          customer_code=customer.customer_code,
-          document_id=document.id
-      ) }}"
-      class="d-inline"
-      onsubmit="return confirm('Are you sure you want to delete this document?');">
-
-    <button type="submit"
-            class="btn btn-outline-danger btn-sm">
-        🗑 Delete
-    </button>
-
-</form>
-            
-
-        </div>
-
-    </div>
-
-</div>
+                                <strong>
+                                    📄 {{ document.filename }}
+                                </strong>
 
                                 <br>
 
                                 <small class="text-muted">
+
                                     Uploaded:
                                     {{ document.uploaded_at.strftime("%d %b %Y %H:%M") }}
+
                                 </small>
+
+                            </div>
+
+
+                            <!-- Document Actions -->
+                            <div class="d-flex flex-wrap gap-2">
+
+                                <a href="{{ url_for(
+                                    'main.customer_document',
+                                    customer_code=customer.customer_code,
+                                    document_id=document.id,
+                                    action='view'
+                                ) }}"
+                                   class="btn btn-outline-primary btn-sm"
+                                   target="_blank">
+                                    👁 View
+                                </a>
+
+
+                                <a href="{{ url_for(
+                                    'main.customer_document',
+                                    customer_code=customer.customer_code,
+                                    document_id=document.id,
+                                    action='download'
+                                ) }}"
+                                   class="btn btn-outline-success btn-sm">
+                                    📥 Download
+                                </a>
+
+
+                                <form method="POST"
+                                      action="{{ url_for(
+                                          'main.delete_customer_document',
+                                          customer_code=customer.customer_code,
+                                          document_id=document.id
+                                      ) }}"
+                                      class="d-inline"
+                                      onsubmit="return confirm('Are you sure you want to delete this document?');">
+
+                                    <button type="submit"
+                                            class="btn btn-outline-danger btn-sm">
+                                        🗑 Delete
+                                    </button>
+
+                                </form>
 
                             </div>
 
@@ -282,25 +282,23 @@
 </div>
 
 
-<!-- ========================= -->
-<!-- TASKS -->
-<!-- ========================= -->
-
+<!-- TASKS HEADER -->
 <div class="d-flex justify-content-between align-items-center mb-3">
 
     <h4 class="fw-bold mb-0">
         📋 Tasks
     </h4>
 
-    <a href="{{ url_for('main.add_task', customer_code=customer.customer_code) }}"
+    <a href="{{ url_for('main.add_task',
+                        customer_code=customer.customer_code) }}"
        class="btn btn-primary btn-sm">
         ➕ Add Task
     </a>
 
 </div>
 
-<!-- Active Tasks -->
 
+<!-- ACTIVE TASKS -->
 <div class="card shadow-sm border-0 mb-4">
 
     <div class="card-header bg-success text-white">
@@ -313,7 +311,10 @@
 
     <div class="card-body">
 
-        {% set active_tasks = customer.tasks | selectattr("completed", "equalto", False) | list %}
+        {% set active_tasks = customer.tasks
+            | selectattr("completed", "equalto", False)
+            | list %}
+
 
         {% if active_tasks %}
 
@@ -321,61 +322,99 @@
 
                 {% for task in active_tasks %}
 
-                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <li class="list-group-item">
 
-                    <div>
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
 
-    <h6 class="fw-bold mb-2">
-        ⏳ {{ task.title }}
-    </h6>
+                            <!-- Task Information -->
+                            <div>
 
-    {% if task.due_date %}
-        <div class="mb-2">
-            <small class="text-muted">
-                📅 Due Date
-            </small><br>
-            {{ task.due_date.strftime("%d %b %Y") }}
-        </div>
-    {% endif %}
+                                <h6 class="fw-bold mb-2">
+                                    ⏳ {{ task.title }}
+                                </h6>
 
-    <div class="mb-2">
 
-        {% if task.priority == "High" %}
-            <span class="badge bg-danger">High Priority</span>
-        {% elif task.priority == "Medium" %}
-            <span class="badge bg-warning text-dark">Medium Priority</span>
-        {% else %}
-            <span class="badge bg-success">Low Priority</span>
-        {% endif %}
+                                {% if task.due_date %}
 
-    </div>
+                                    <div class="mb-2">
 
-    <small class="text-muted">
-        🕒 Created:
-        {{ task.created_at.strftime("%d %b %Y") }}
-    </small>
+                                        <small class="text-muted">
+                                            📅 Due Date
+                                        </small>
 
-</div>
-                    <div>
+                                        <br>
 
-                        <a href="{{ url_for('main.edit_task', task_id=task.id) }}"
-                           class="btn btn-warning btn-sm">
-                            ✏ Edit
-                        </a>
+                                        {{ task.due_date.strftime("%d %b %Y") }}
 
-                        <a href="{{ url_for('main.complete_task', task_id=task.id) }}"
-                           class="btn btn-success btn-sm">
-                            ✓ Complete                        </a>
+                                    </div>
 
-                        <a href="{{ url_for('main.delete_task', task_id=task.id) }}"
-                           class="btn btn-danger btn-sm"
-                           onclick="return confirm('Delete this task?');">
-                             📦 Archive
-                        </a>
+                                {% endif %}
 
-                    </div>
 
-                </li>
+                                <div class="mb-2">
+
+                                    {% if task.priority == "High" %}
+
+                                        <span class="badge bg-danger">
+                                            High Priority
+                                        </span>
+
+                                    {% elif task.priority == "Medium" %}
+
+                                        <span class="badge bg-warning text-dark">
+                                            Medium Priority
+                                        </span>
+
+                                    {% else %}
+
+                                        <span class="badge bg-success">
+                                            Low Priority
+                                        </span>
+
+                                    {% endif %}
+
+                                </div>
+
+
+                                <small class="text-muted">
+
+                                    🕒 Created:
+                                    {{ task.created_at.strftime("%d %b %Y") }}
+
+                                </small>
+
+                            </div>
+
+
+                            <!-- Task Actions -->
+                            <div class="d-flex flex-wrap gap-1">
+
+                                <a href="{{ url_for('main.edit_task',
+                                                    task_id=task.id) }}"
+                                   class="btn btn-warning btn-sm">
+                                    ✏ Edit
+                                </a>
+
+
+                                <a href="{{ url_for('main.complete_task',
+                                                    task_id=task.id) }}"
+                                   class="btn btn-success btn-sm">
+                                    ✓ Complete
+                                </a>
+
+
+                                <a href="{{ url_for('main.delete_task',
+                                                    task_id=task.id) }}"
+                                   class="btn btn-danger btn-sm"
+                                   onclick="return confirm('Delete this task?');">
+                                    📦 Archive
+                                </a>
+
+                            </div>
+
+                        </div>
+
+                    </li>
 
                 {% endfor %}
 
@@ -393,8 +432,8 @@
 
 </div>
 
-<!-- Completed Tasks -->
 
+<!-- COMPLETED TASKS -->
 <div class="card shadow-sm border-0 mb-4">
 
     <div class="card-header bg-secondary text-white">
@@ -407,7 +446,10 @@
 
     <div class="card-body">
 
-        {% set completed_tasks = customer.tasks | selectattr("completed", "equalto", True) | list %}
+        {% set completed_tasks = customer.tasks
+            | selectattr("completed", "equalto", True)
+            | list %}
+
 
         {% if completed_tasks %}
 
@@ -415,27 +457,51 @@
 
                 {% for task in completed_tasks %}
 
-                <li class="list-group-item">
+                    <li class="list-group-item">
 
-                    <strong>✅ {{ task.title }}</strong>
+                        <strong>
+                            ✅ {{ task.title }}
+                        </strong>
 
-                    {% if task.completed_at %}
-                    <br>
-                    <small class="text-success">
-                        Completed:
-                        {{ task.completed_at.strftime("%d %b %Y") }}
-                    </small>
-                    {% endif %}
 
-                    {% if task.priority == "High" %}
-                        <br><span class="badge bg-danger">🔴 High</span>
-                    {% elif task.priority == "Medium" %}
-                        <br><span class="badge bg-warning text-dark">🟡 Medium</span>
-                    {% else %}
-                        <br><span class="badge bg-success">🟢 Low</span>
-                    {% endif %}
+                        {% if task.completed_at %}
 
-                </li>
+                            <br>
+
+                            <small class="text-success">
+
+                                Completed:
+                                {{ task.completed_at.strftime("%d %b %Y") }}
+
+                            </small>
+
+                        {% endif %}
+
+
+                        {% if task.priority == "High" %}
+
+                            <br>
+                            <span class="badge bg-danger">
+                                🔴 High
+                            </span>
+
+                        {% elif task.priority == "Medium" %}
+
+                            <br>
+                            <span class="badge bg-warning text-dark">
+                                🟡 Medium
+                            </span>
+
+                        {% else %}
+
+                            <br>
+                            <span class="badge bg-success">
+                                🟢 Low
+                            </span>
+
+                        {% endif %}
+
+                    </li>
 
                 {% endfor %}
 
@@ -453,25 +519,32 @@
 
 </div>
 
-            <a href="{{ url_for('main.edit_customer', customer_code=customer.customer_code) }}"
-               class="btn btn-warning">
-                ✏️ Edit
-            </a>
 
-            <a href="{{ url_for('main.archive_customer', customer_code=customer.customer_code) }}"
-               class="btn btn-danger"
-               onclick="return confirm('Are you sure you want to archive this customer?');">
-                 📦 Archive Customer
-            </a>
+<!-- CUSTOMER ACTIONS -->
+<div class="d-flex flex-wrap gap-2 mb-4">
 
-            <a href="{{ url_for('main.customers') }}"
-               class="btn btn-secondary">
-                ⬅ Back
-            </a>
+    <a href="{{ url_for('main.edit_customer',
+                        customer_code=customer.customer_code) }}"
+       class="btn btn-warning">
+        ✏️ Edit
+    </a>
 
-        </div>
 
-    </div>
+    <a href="{{ url_for('main.archive_customer',
+                        customer_code=customer.customer_code) }}"
+       class="btn btn-danger"
+       onclick="return confirm('Are you sure you want to archive this customer?');">
+        📦 Archive Customer
+    </a>
+
+
+    <a href="{{ url_for('main.customers') }}"
+       class="btn btn-secondary">
+        ⬅ Back
+    </a>
+
+</div>
+
 
 </div>
 

@@ -4,166 +4,308 @@
 
 {% block content %}
 
-<div class="customers-page">
+<div class="container mt-4">
 
-    <!-- Page Header -->
-    <div class="row align-items-center mb-4">
+<!-- Page Header -->
+<div class="row align-items-center mb-4">
 
-        <div class="col-md-6">
-            <h2 class="fw-bold">👥 Customers</h2>
-            <p class="text-muted mb-0">
-                Manage your customer database
-            </p>
-        </div>
+    <div class="col-md-6">
 
-        <div class="col-md-6 text-md-end mt-3 mt-md-0">
+        <h2 class="fw-bold mb-1">
+            👥 Customers
+        </h2>
 
-            <a href="{{ url_for('main.add_customer') }}"
-               class="btn btn-success me-2">
-                ➕ Add Customer
-            </a>
-            <span class="fw-bold me-2">
+        <p class="text-muted mb-0">
+            Manage your customer database
+        </p>
+
+    </div>
+
+    <div class="col-md-6 text-md-end mt-3 mt-md-0">
+
+        <!-- Add Customer -->
+        <a href="{{ url_for('main.add_customer') }}"
+           class="btn btn-success me-2">
+            ➕ Add Customer
+        </a>
+
+        <span class="fw-bold me-2">
             Exports:
-            </span>
+        </span>
 
-            <a href="{{ url_for('main.export_csv') }}"
-            class="btn btn-outline-primary btn-sm">
-                CSV
-            </a>
+        <!-- CSV -->
+        <a href="{{ url_for('main.export_csv') }}"
+           class="btn btn-outline-primary btn-sm">
+            CSV
+        </a>
 
-            <a href="{{ url_for('main.export_xlsx') }}"
-            class="btn btn-outline-success btn-sm">
-                Excel
-            </a>
+        <!-- Excel -->
+        <a href="{{ url_for('main.export_xlsx') }}"
+           class="btn btn-outline-success btn-sm">
+            Excel
+        </a>
 
-            <a href="{{ url_for('main.export_pdf') }}"
-            class="btn btn-outline-danger btn-sm">
-                PDF
-            </a>
+        <!-- PDF -->
+        <a href="{{ url_for('main.export_pdf') }}"
+           class="btn btn-outline-danger btn-sm">
+            PDF
+        </a>
 
-            <a href="{{ url_for('main.export_customers') }}"
-            class="btn btn-outline-secondary btn-sm">
-                By Month
-            </a>
+        <!-- By Month -->
+        <a href="{{ url_for('main.export_customers') }}"
+           class="btn btn-outline-secondary btn-sm">
+            By Month
+        </a>
+
+    </div>
+
+</div>
+
+
+<!-- Search -->
+<div class="card shadow-sm border-0 mb-4">
+
+    <div class="card-body">
+
+        <form method="GET" class="row g-3">
+
+            <div class="col-md-9">
+
+                <input
+                    type="text"
+                    name="search"
+                    class="form-control"
+                    placeholder="🔍 Search by name, phone, email or organisation"
+                    value="{{ request.args.get('search', '') }}">
+
+            </div>
+
+            <div class="col-md-3 d-grid">
+
+                <button type="submit"
+                        class="btn btn-primary">
+                    Search
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- Customer Table -->
+<div class="card shadow-sm border-0">
+
+    <div class="card-body p-0">
+
+        <div class="table-responsive"
+             style="max-height:600px; overflow-y:auto;">
+
+            <table class="table table-hover align-middle mb-0">
+
+                <!-- Frozen Navy Header -->
+                <thead
+                    style="
+                        position: sticky;
+                        top: 0;
+                        z-index: 1000;
+                    "
+                >
+
+                    <tr class="text-center">
+
+                        <th style="
+                            width:160px;
+                            background-color:#0b1f3a !important;
+                            color:white;
+                        ">
+                            Customer Code
+                        </th>
+
+                        <th style="
+                            background-color:#0b1f3a !important;
+                            color:white;
+                        ">
+                            👤 Name
+                        </th>
+
+                        <th style="
+                            background-color:#0b1f3a !important;
+                            color:white;
+                        ">
+                            📞 Phone
+                        </th>
+
+                        <th style="
+                            background-color:#0b1f3a !important;
+                            color:white;
+                        ">
+                            📧 Email
+                        </th>
+
+                        <th style="
+                            background-color:#0b1f3a !important;
+                            color:white;
+                        ">
+                            Organisation
+                        </th>
+
+                        <th style="
+                            background-color:#0b1f3a !important;
+                            color:white;
+                        ">
+                            📍 Address
+                        </th>
+
+                        <th style="
+                            background-color:#0b1f3a !important;
+                            color:white;
+                            min-width:190px;
+                        ">
+                            Actions
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for customer in customers %}
+
+                        <tr class="align-middle">
+
+                            <!-- Customer Code -->
+                            <td>
+
+                                <span class="badge bg-secondary px-3 py-2">
+                                    {{ customer.customer_code }}
+                                </span>
+
+                            </td>
+
+
+                            <!-- Name -->
+                            <td>
+
+                                {{ customer.name }}
+
+                            </td>
+
+
+                            <!-- Phone -->
+                            <td>
+
+                                {{ customer.phone }}
+
+                            </td>
+
+
+                            <!-- Email -->
+                            <td>
+
+                                {{ customer.email }}
+
+                            </td>
+
+
+                            <!-- Organisation -->
+                            <td>
+
+                                {% if customer.organisation_name %}
+
+                                    <span class="badge bg-secondary">
+                                        {{ customer.organisation_name }}
+                                    </span>
+
+                                {% else %}
+
+                                    -
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <!-- Address -->
+                            <td>
+
+                                {{ customer.address }}
+
+                            </td>
+
+
+                            <!-- Actions -->
+                            <td class="text-center">
+
+                                <div class="d-flex flex-wrap justify-content-center gap-1">
+
+                                    <!-- View -->
+                                    <a href="{{ url_for('main.customer_details',
+                                                        customer_code=customer.customer_code) }}"
+                                       class="btn btn-primary btn-sm">
+                                        👁 View
+                                    </a>
+
+                                    <!-- Edit -->
+                                    <a href="{{ url_for('main.edit_customer',
+                                                        customer_code=customer.customer_code) }}"
+                                       class="btn btn-warning btn-sm">
+                                        ✏ Edit
+                                    </a>
+
+                                    <!-- Task -->
+                                    <a href="{{ url_for('main.add_task',
+                                                        customer_code=customer.customer_code) }}"
+                                       class="btn btn-info btn-sm">
+                                        ➕ Task
+                                    </a>
+
+                                    <!-- Archive -->
+                                    <a href="{{ url_for('main.archive_customer',
+                                                        customer_code=customer.customer_code) }}"
+                                       class="btn btn-danger btn-sm"
+                                       onclick="return confirm('Archive this customer?');">
+                                        📦 Archive
+                                    </a>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+
+                    {% else %}
+
+                        <tr>
+
+                            <td colspan="7"
+                                class="text-center py-4 text-muted">
+
+                                No customers found.
+
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
 
         </div>
 
     </div>
 
-    <!-- Search -->
-    <div class="card shadow-sm border-0 mb-4">
+</div>
 
-        <div class="card-body">
 
-            <form method="GET" class="row g-3">
+</div>
 
-                <div class="col-md-9">
-
-                    <input
-                        type="text"
-                        name="search"
-                        class="form-control"
-                        placeholder="🔍 Search by name, phone, email or organisation"
-                        value="{{ request.args.get('search', '') }}">
-
-                </div>
-
-                <div class="col-md-3 d-grid">
-
-                    <button type="submit"
-                            class="btn btn-primary">
-                        Search
-                    </button>
-
-                </div>
-
-            </form>
-
-        </div>
-
-    </div>
-
-    <!-- Customer Table -->
-    <div class="card shadow-sm border-0">
-    
-    <div class="table-responsive"
-         style="max-height:600px; overflow-y:auto;">
-
-        <table class="table table-hover align-left mb-0">
-    <table class="table table-hover align-left mb-0">
-
-        <thead class="table-dark"
-               style="position: sticky; top: 0; z-index: 1000;">
-
-            <tr class="text-center">
-                <th style="width:160px;">Customer Code</th>
-                <th>👤 Name</th>
-                <th>📞 Phone</th>
-                <th>📧 Email</th>
-                <th> Organisation</th>
-                <th>📍 Address</th>
-                <th>Actions</th>
-            </tr>
-
-        </thead>
-
-        <tbody>
-
-        {% for customer in customers %}
-
-            <tr>
-                <td>{{ customer.customer_code }}</td>
-                <td>{{ customer.name }}</td>
-                <td>{{ customer.phone }}</td>
-                <td>{{ customer.email }}</td>
-                <td>{{ customer.organisation_name }}</td>
-                <td>{{ customer.address }}</td>
-
-                <td class="text-center">
-
-                    <a href="{{ url_for('main.customer_details',
-                                        customer_code=customer.customer_code) }}"
-                       class="btn btn-primary btn-sm">
-                        👁 View
-                    </a>
-
-                    <a href="{{ url_for('main.edit_customer',
-                                        customer_code=customer.customer_code) }}"
-                       class="btn btn-warning btn-sm">
-                        ✏ Edit
-                    </a>
-
-                    <a href="{{ url_for('main.add_task',
-                                        customer_code=customer.customer_code) }}"
-                       class="btn btn-info btn-sm">
-                        ➕ Task
-                    </a>
-
-                    <a href="{{ url_for('main.archive_customer',
-                                        customer_code=customer.customer_code) }}"
-                       class="btn btn-danger btn-sm"
-                       onclick="return confirm('Archive this customer?');">
-                        📦 Archive
-                    </a>
-
-                </td>
-
-            </tr>
-
-        {% else %}
-
-            <tr>
-                <td colspan="7" class="text-center py-4 text-muted">
-                    No customers found.
-                </td>
-            </tr>
-
-        {% endfor %}
-
-        </tbody>
-
-    </table>
-
-    </div>  
-</div>    
 {% endblock %}
