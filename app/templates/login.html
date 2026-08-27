@@ -1,7 +1,7 @@
 
 {% extends "base.html" %}
 
-{% block title %}Login{% endblock %}
+{% block title %}BAU Customer Portal - Login{% endblock %}
 
 {% block content %}
 
@@ -15,31 +15,42 @@
 
                 <div class="card-body p-5">
 
-                    <!-- Login Header -->
+                    <!-- Portal Branding -->
                     <div class="text-center mb-4">
+
+                        <h1 class="fw-bold mb-1">
+                            BAU Customer Portal
+                        </h1>
+
+                        <p class="text-muted mb-4">
+                            Powered by BAU Digital Technologies Pty Ltd
+                        </p>
 
                         <div class="display-4">
                             🔐
                         </div>
 
-                        <h2 class="fw-bold">
+                        <h2 class="fw-bold mt-2">
                             Welcome Back
                         </h2>
 
                         <p class="text-muted">
-                            Sign in to securely manage your customers, documents, and tasks.
+                            Sign in to securely manage your customers,
+                            documents, and tasks.
                         </p>
 
                     </div>
 
 
                     <!-- Login Form -->
+
                     <form method="POST">
 
                         {{ form.hidden_tag() }}
 
 
                         <!-- Username -->
+
                         <div class="mb-3">
 
                             {{ form.username.label(class="form-label fw-bold") }}
@@ -61,6 +72,7 @@
 
 
                         <!-- Password -->
+
                         <div class="mb-2">
 
                             {{ form.password.label(class="form-label fw-bold") }}
@@ -92,10 +104,12 @@
 
 
                         <!-- Forgot Password -->
+
                         <div class="text-end mb-3">
 
-                            <a href="{{ url_for('main.forgot_password') }}"
-                               class="text-decoration-none">
+                            <a
+                                href="{{ url_for('main.forgot_password') }}"
+                                class="text-decoration-none">
 
                                 Forgot Password?
 
@@ -105,16 +119,20 @@
 
 
                         <!-- Remember Me -->
+
                         <div class="form-check mb-4">
 
                             {{ form.remember(class="form-check-input") }}
 
-                            {{ form.remember.label(class="form-check-label") }}
+                            {{ form.remember.label(
+                                class="form-check-label"
+                            ) }}
 
                         </div>
 
 
                         <!-- Login Button -->
+
                         <div class="d-grid">
 
                             {{ form.submit(
@@ -125,14 +143,16 @@
 
 
                         <!-- Registration Link -->
+
                         <div class="text-center mt-3">
 
                             <span class="text-muted">
                                 Don't have an account?
                             </span>
 
-                            <a href="{{ url_for('main.register') }}"
-                               class="text-decoration-none fw-bold">
+                            <a
+                                href="{{ url_for('main.register') }}"
+                                class="text-decoration-none fw-bold">
 
                                 Create an Account
 
@@ -154,6 +174,7 @@
 
 
 <!-- Password Visibility -->
+
 <script>
 
 function togglePassword() {

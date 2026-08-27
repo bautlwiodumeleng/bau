@@ -1,6 +1,7 @@
+
 {% extends "base.html" %}
 
-{% block title %}Create Your Account{% endblock %}
+{% block title %}BAU Customer Portal - Create Account{% endblock %}
 
 {% block content %}
 
@@ -14,29 +15,48 @@
 
                 <div class="card-body p-5">
 
+                    <!-- Portal Branding -->
+
                     <div class="text-center mb-4">
+
+                        <h1 class="fw-bold mb-1">
+                            BAU Customer Portal
+                        </h1>
+
+                        <p class="text-muted mb-4">
+                            Powered by BAU Digital Technologies Pty Ltd
+                        </p>
 
                         <div class="display-4">
                             📝
                         </div>
 
-                        <h2 class="fw-bold">
+                        <h2 class="fw-bold mt-2">
                             Create Your Account
                         </h2>
 
                         <p class="text-muted">
-                            Securely manage your customers, documents, and tasks from one place.
+                            Securely manage your customers, documents,
+                            and tasks from one place.
                         </p>
 
                     </div>
+
+
+                    <!-- Registration Form -->
 
                     <form method="POST">
 
                         {{ form.hidden_tag() }}
 
+
+                        <!-- Username -->
+
                         <div class="mb-3">
 
-                            {{ form.username.label(class="form-label fw-bold") }}
+                            {{ form.username.label(
+                                class="form-label fw-bold"
+                            ) }}
 
                             <div class="input-group">
 
@@ -53,9 +73,14 @@
 
                         </div>
 
+
+                        <!-- Email -->
+
                         <div class="mb-3">
 
-                            {{ form.email.label(class="form-label fw-bold") }}
+                            {{ form.email.label(
+                                class="form-label fw-bold"
+                            ) }}
 
                             <div class="input-group">
 
@@ -72,9 +97,14 @@
 
                         </div>
 
+
+                        <!-- Password -->
+
                         <div class="mb-3">
 
-                            {{ form.password.label(class="form-label fw-bold") }}
+                            {{ form.password.label(
+                                class="form-label fw-bold"
+                            ) }}
 
                             <div class="input-group">
 
@@ -101,9 +131,14 @@
 
                         </div>
 
+
+                        <!-- Confirm Password -->
+
                         <div class="mb-4">
 
-                            {{ form.confirm.label(class="form-label fw-bold") }}
+                            {{ form.confirm.label(
+                                class="form-label fw-bold"
+                            ) }}
 
                             <div class="input-group">
 
@@ -130,6 +165,9 @@
 
                         </div>
 
+
+                        <!-- Register Button -->
+
                         <div class="d-grid">
 
                             {{ form.submit(
@@ -137,13 +175,25 @@
                             ) }}
 
                         </div>
-                    <div class="text-center mt-3">
-                            <span class="text-muted">Already have an account?</span>
-                            <a href="{{ url_for('main.login') }}"
-                            class="text-decoration-none fw-bold">
+
+
+                        <!-- Login Link -->
+
+                        <div class="text-center mt-3">
+
+                            <span class="text-muted">
+                                Already have an account?
+                            </span>
+
+                            <a
+                                href="{{ url_for('main.login') }}"
+                                class="text-decoration-none fw-bold">
+
                                 Log in
+
                             </a>
-                        </div>    
+
+                        </div>
 
                     </form>
 
@@ -156,6 +206,9 @@
     </div>
 
 </div>
+
+
+<!-- Password Visibility -->
 
 <script>
 

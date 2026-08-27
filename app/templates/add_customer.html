@@ -1,51 +1,202 @@
 {% extends "base.html" %}
 
-{% block title %}Add customer{% endblock %}
+{% block title %}BAU Customer Portal - Add Customer{% endblock %}
 
 {% block content %}
 
+<div class="container mt-2">
 
-<div class="container mt-4">
+    <!-- Portal Branding -->
 
-    <h2>Add Customer</h2>
+    <div class="text-center mb-3">
 
-    <form method="POST">
+        <h1 class="fw-bold mb-1">
+            BAU Customer Portal
+        </h1>
 
-        {{ form.hidden_tag() }}
+        <p class="text-muted mb-0">
+            Powered by BAU Digital Technologies Pty Ltd
+        </p>
 
-        <div class="mb-3">
-            <label class="form-label">Customer Name</label>
-            {{ form.name(class="form-control") }}
+    </div>
+
+
+    <!-- Page Header -->
+
+    <div class="text-center mb-3">
+
+        <h2 class="fw-bold mb-1">
+            ➕ Add Customer
+        </h2>
+
+        <p class="text-muted mb-2">
+            Add a new customer to your customer database.
+        </p>
+
+    </div>
+
+
+    <!-- Customer Form -->
+
+    <div class="row justify-content-center">
+
+        <div class="col-md-8">
+
+            <div class="card shadow-sm border-0">
+
+                <div class="card-header text-white"
+                     style="background-color:#0b1f3a;">
+
+                    <h5 class="mb-0">
+                        👤 Customer Information
+                    </h5>
+
+                </div>
+
+
+                <div class="card-body p-4">
+
+                    <form method="POST">
+
+                        {{ form.hidden_tag() }}
+
+
+                        <!-- Customer Name -->
+
+                        <div class="mb-3">
+
+                            {{ form.name.label(
+                                class="form-label fw-bold"
+                            ) }}
+
+                            {{ form.name(
+                                class="form-control",
+                                style="max-width: 65%;",
+                                placeholder="Enter customer name"
+                            ) }}
+
+                        </div>
+
+
+                        <!-- Phone -->
+
+                        <div class="mb-3">
+
+                            {{ form.phone.label(
+                                class="form-label fw-bold"
+                            ) }}
+
+                            {{ form.phone(
+                                class="form-control",
+                                style="max-width: 65%;",
+                                placeholder="Enter phone number"
+                            ) }}
+
+                        </div>
+
+
+                        <!-- Email -->
+
+                        <div class="mb-3">
+
+                            {{ form.email.label(
+                                class="form-label fw-bold"
+                            ) }}
+
+                            {{ form.email(
+                                class="form-control",
+                                style="max-width: 75%;",
+                                placeholder="Enter email address"
+                            ) }}
+
+                        </div>
+
+
+                        <!-- Organisation -->
+
+                        <div class="mb-3">
+
+                            {{ form.organisation_name.label(
+                                class="form-label fw-bold"
+                            ) }}
+
+                            {{ form.organisation_name(
+                                class="form-control",
+                                style="max-width: 65%;",
+                                placeholder="Enter organisation name"
+                            ) }}
+
+                        </div>
+
+
+                        <!-- Address -->
+
+                        <div class="mb-3">
+
+                            {{ form.address.label(
+                                class="form-label fw-bold"
+                            ) }}
+
+                            {{ form.address(
+                                class="form-control",
+                                style="max-width: 75%;",
+                                placeholder="Enter customer address"
+                            ) }}
+
+                        </div>
+
+
+                        <!-- Notes -->
+
+                        <div class="mb-4">
+
+                            {{ form.notes.label(
+                                class="form-label fw-bold"
+                            ) }}
+
+                            {{ form.notes(
+                                class="form-control",
+                                style="max-width: 75%;",
+                                rows=4,
+                                placeholder="Enter customer notes"
+                            ) }}
+
+                        </div>
+
+
+                        <!-- Actions -->
+
+                        <div class="d-flex flex-wrap gap-2">
+
+                            <button
+                                type="submit"
+                                class="btn btn-primary">
+
+                                💾 Add Customer
+
+                            </button>
+
+
+                            <a
+                                href="{{ url_for('main.customers') }}"
+                                class="btn btn-secondary">
+
+                                ⬅ Back to Customers
+
+                            </a>
+
+                        </div>
+
+
+                    </form>
+
+                </div>
+
+            </div>
+
         </div>
 
-        <div class="mb-3">
-            {{ form.phone.label(class="form-label") }}
-            {{ form.phone(class="form-control") }}
-        </div>
-
-        <div class="mb-3">
-            {{ form.email.label(class="form-label") }}
-            {{ form.email(class="form-control") }}
-        </div>
-
-        <div class="mb-3">
-            {{ form.organisation_name.label(class="form-label") }}
-            {{ form.organisation_name(class="form-control") }}
-        </div>
-
-        <div class="mb-3">
-            {{ form.address.label(class="form-label") }}
-            {{ form.address(class="form-control") }}
-        </div>
-
-        <div class="mb-3">
-            {{ form.notes.label(class="form-label") }}
-            {{ form.notes(class="form-control", rows=4) }}
-        </div>
-
-        {{ form.submit(class="btn btn-primary") }}
-
-    </form>
+    </div>
 
 </div>
 

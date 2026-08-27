@@ -1,11 +1,27 @@
 
 {% extends "base.html" %}
 
-{% block title %}Dashboard{% endblock %}
+{% block title %}BAU Customer Portal - Dashboard{% endblock %}
 
 {% block content %}
 
+<!-- Portal Header -->
+
 <div class="mb-4">
+
+    <div class="text-center mb-4">
+
+        <h1 class="fw-bold mb-1">
+            BAU Customer Portal
+        </h1>
+
+        <p class="text-muted mb-0">
+            Powered by BAU Digital Technologies Pty Ltd
+        </p>
+
+    </div>
+
+
     <h2 class="fw-bold mb-1">
         Welcome, {{ current_user.username }} 👋
     </h2>
@@ -13,13 +29,20 @@
     <p class="text-muted mb-0">
         Here's an overview of your customer management activity.
     </p>
+
 </div>
 
-   <div class="row">
+
+<!-- Dashboard Statistics -->
+
+<div class="row">
 
     <!-- Customers -->
+
     <div class="col-md-3 mb-3">
+
         <div class="card shadow-sm h-100">
+
             <div class="card-body text-center">
 
                 <div class="display-5 mb-2">
@@ -35,12 +58,18 @@
                 </h2>
 
             </div>
+
         </div>
+
     </div>
 
+
     <!-- Organisations -->
+
     <div class="col-md-3 mb-3">
+
         <div class="card shadow-sm h-100">
+
             <div class="card-body text-center">
 
                 <div class="display-5 mb-2">
@@ -56,12 +85,18 @@
                 </h2>
 
             </div>
+
         </div>
+
     </div>
 
+
     <!-- New This Month -->
+
     <div class="col-md-3 mb-3">
+
         <div class="card shadow-sm h-100">
+
             <div class="card-body text-center">
 
                 <div class="display-5 mb-2">
@@ -77,12 +112,18 @@
                 </h2>
 
             </div>
+
         </div>
+
     </div>
 
+
     <!-- Tasks -->
+
     <div class="col-md-3 mb-3">
+
         <div class="card shadow-sm h-100">
+
             <div class="card-body text-center">
 
                 <div class="display-5 mb-2">
@@ -98,200 +139,293 @@
                 </h2>
 
             </div>
+
         </div>
+
     </div>
 
 </div>
 
+
+<!-- Recent Customers -->
+
+<hr class="my-4">
+
+<div class="d-flex justify-content-between align-items-center mb-2">
+
+    <h4 class="mb-0">
+        Recent Customers
+    </h4>
+
 </div>
 
-    <hr class="my-4">
 
-    <div class="d-flex justify-content-between align-items-center mb-2">
-        <h4 class="mb-0">Recent Customers</h4>
+<div class="card shadow-sm">
+
+    <div class="card-body">
+
+        {% if recent_customers %}
+
+            <ul class="list-group list-group-flush">
+
+                {% for customer in recent_customers %}
+
+                    <li class="list-group-item">
+
+                        <strong>
+                            {{ customer.name }}
+                        </strong>
+
+                        {% if customer.organisation_name %}
+
+                            - {{ customer.organisation_name }}
+
+                        {% endif %}
+
+                    </li>
+
+                {% endfor %}
+
+            </ul>
+
+        {% else %}
+
+            <p class="text-muted mb-0">
+                No customers added yet.
+            </p>
+
+        {% endif %}
+
     </div>
 
-    <div class="card shadow-sm">
+</div>
 
-        <div class="card-body">
 
-            {% if recent_customers %}
+<!-- Overdue Tasks -->
 
-                <ul class="list-group list-group-flush">
+<hr class="my-4">
 
-                    {% for customer in recent_customers %}
+<div class="d-flex justify-content-between align-items-center mb-2">
 
-                        <li class="list-group-item">
+    <h4 class="text-danger mb-0">
+        ⚠ Overdue Tasks
+    </h4>
 
-                            <strong>{{ customer.name }}</strong>
+</div>
 
-                            {% if customer.organisation_name %}
-                                - {{ customer.organisation_name }}
-                            {% endif %}
 
-                        </li>
+<div class="card border-danger shadow-sm">
 
-                    {% endfor %}
+    <div class="card-body">
 
-                </ul>
+        {% if overdue_tasks %}
 
-            {% else %}
+            <ul class="list-group list-group-flush">
 
-                <p>No customers added yet.</p>
+                {% for task in overdue_tasks %}
 
-            {% endif %}
+                    <li class="list-group-item">
 
-        </div>
+                        <a
+                            href="{{ url_for(
+                                'main.customer_details',
+                                customer_code=task.customer.customer_code
+                            ) }}"
+                            class="fw-bold text-decoration-none">
 
-    </div>
+                            {{ task.title }}
 
-    <hr class="my-4">
+                        </a>
 
-    <div class="d-flex justify-content-between align-items-center mb-2">
-        <h4 class="text-danger mb-0">⚠ Overdue Tasks</h4>
-    </div>
+                        <br>
 
-    <div class="card border-danger shadow-sm">
+                        <small>
 
-        <div class="card-body">
+                            <a
+                                href="{{ url_for(
+                                    'main.customer_details',
+                                    customer_code=task.customer.customer_code
+                                ) }}"
+                                class="text-decoration-none">
 
-            {% if overdue_tasks %}
+                                {{ task.customer.name }}
 
-                <ul class="list-group list-group-flush">
-
-                    {% for task in overdue_tasks %}
-
-                        <li class="list-group-item">
-
-                            <a href="{{ url_for('main.customer_details', customer_code=task.customer.customer_code) }}"
-                               class="fw-bold text-decoration-none">
-                                {{ task.title }}
                             </a>
 
-                            <br>
+                        </small>
 
-                            <small>
-                                <a href="{{ url_for('main.customer_details', customer_code=task.customer.customer_code) }}"
-                                   class="text-decoration-none">
-                                    {{ task.customer.name }}
-                                </a>
-                            </small>
+                        <br>
 
-                            <br>
+                        <small class="text-danger">
 
-                            <small class="text-danger">
-                                📅 Due:
-                                {{ task.due_date.strftime("%d %b %Y") }}
-                            </small>
+                            📅 Due:
+                            {{ task.due_date.strftime("%d %b %Y") }}
 
-                            <br>
+                        </small>
 
-                            {% if task.priority == "High" %}
-                                <span class="badge bg-danger">High</span>
-                            {% elif task.priority == "Medium" %}
-                                <span class="badge bg-warning text-dark">Medium</span>
-                            {% else %}
-                                <span class="badge bg-success">Low</span>
-                            {% endif %}
+                        <br>
 
-                        </li>
+                        {% if task.priority == "High" %}
 
-                    {% endfor %}
+                            <span class="badge bg-danger">
+                                High
+                            </span>
 
-                </ul>
+                        {% elif task.priority == "Medium" %}
 
-            {% else %}
+                            <span class="badge bg-warning text-dark">
+                                Medium
+                            </span>
 
-                <p class="text-muted">
-                    No overdue tasks 🎉
-                </p>
+                        {% else %}
 
-            {% endif %}
+                            <span class="badge bg-success">
+                                Low
+                            </span>
 
-        </div>
+                        {% endif %}
+
+                    </li>
+
+                {% endfor %}
+
+            </ul>
+
+        {% else %}
+
+            <p class="text-muted mb-0">
+                No overdue tasks 🎉
+            </p>
+
+        {% endif %}
 
     </div>
 
-    <hr class="my-4">
+</div>
 
-    <div class="d-flex justify-content-between align-items-center mb-2">
-        <h4 class="mb-0">📅 Upcoming Tasks</h4>
-    </div>
 
-    <div class="card shadow-sm">
+<!-- Upcoming Tasks -->
 
-        <div class="card-body">
+<hr class="my-4">
 
-            {% if upcoming_tasks %}
+<div class="d-flex justify-content-between align-items-center mb-2">
 
-                <ul class="list-group list-group-flush">
+    <h4 class="mb-0">
+        📅 Upcoming Tasks
+    </h4>
 
-                    {% for task in upcoming_tasks %}
+</div>
 
-                        <li class="list-group-item">
 
-                            <a href="{{ url_for('main.customer_details', customer_code=task.customer.customer_code) }}"
-                               class="fw-bold text-decoration-none">
-                                {{ task.title }}
+<div class="card shadow-sm">
+
+    <div class="card-body">
+
+        {% if upcoming_tasks %}
+
+            <ul class="list-group list-group-flush">
+
+                {% for task in upcoming_tasks %}
+
+                    <li class="list-group-item">
+
+                        <a
+                            href="{{ url_for(
+                                'main.customer_details',
+                                customer_code=task.customer.customer_code
+                            ) }}"
+                            class="fw-bold text-decoration-none">
+
+                            {{ task.title }}
+
+                        </a>
+
+                        <br>
+
+                        <small>
+
+                            <a
+                                href="{{ url_for(
+                                    'main.customer_details',
+                                    customer_code=task.customer.customer_code
+                                ) }}"
+                                class="text-decoration-none">
+
+                                {{ task.customer.name }}
+
                             </a>
 
-                            <br>
+                        </small>
 
-                            <small>
-                                <a href="{{ url_for('main.customer_details', customer_code=task.customer.customer_code) }}"
-                                   class="text-decoration-none">
-                                    {{ task.customer.name }}
-                                </a>
-                            </small>
+                        <br>
 
-                            <br>
+                        <small>
 
-                            <small>
-                                📅 Due:
-                                {{ task.due_date.strftime("%d %b %Y") }}
-                            </small>
+                            📅 Due:
+                            {{ task.due_date.strftime("%d %b %Y") }}
 
-                            <br>
+                        </small>
 
-                            {% if task.priority == "High" %}
-                                <span class="badge bg-danger">High</span>
-                            {% elif task.priority == "Medium" %}
-                                <span class="badge bg-warning text-dark">Medium</span>
-                            {% else %}
-                                <span class="badge bg-success">Low</span>
-                            {% endif %}
+                        <br>
 
-                        </li>
+                        {% if task.priority == "High" %}
 
-                    {% endfor %}
+                            <span class="badge bg-danger">
+                                High
+                            </span>
 
-                </ul>
+                        {% elif task.priority == "Medium" %}
 
-            {% else %}
+                            <span class="badge bg-warning text-dark">
+                                Medium
+                            </span>
 
-                <p class="text-muted">
-                    No upcoming tasks.
-                </p>
+                        {% else %}
 
-            {% endif %}
+                            <span class="badge bg-success">
+                                Low
+                            </span>
 
-        </div>
+                        {% endif %}
 
-    </div>
+                    </li>
 
-    <div class="mt-4">
+                {% endfor %}
 
-        <a href="{{ url_for('main.add_customer') }}"
-           class="btn btn-primary me-2">
-            ➕ Add Customer
-        </a>
+            </ul>
 
-        <a href="{{ url_for('main.customers') }}"
-           class="btn btn-success">
-            👥 View Customers
-        </a>
+        {% else %}
+
+            <p class="text-muted mb-0">
+                No upcoming tasks.
+            </p>
+
+        {% endif %}
 
     </div>
+
+</div>
+
+
+<!-- Dashboard Actions -->
+
+<div class="mt-4">
+
+    <a
+        href="{{ url_for('main.add_customer') }}"
+        class="btn btn-primary me-2">
+
+        ➕ Add Customer
+
+    </a>
+
+    <a
+        href="{{ url_for('main.customers') }}"
+        class="btn btn-success">
+
+        👥 View Customers
+
+    </a>
 
 </div>
 

@@ -1,45 +1,76 @@
+
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>{% block title %}Customer Portal{% endblock %}</title>
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>
+        {% block title %}
+        BAU Customer Portal
+        {% endblock %}
+    </title>
+
 
     <!-- Bootstrap CSS -->
+
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
         rel="stylesheet"
     >
 
-    <!-- Your CSS -->
+
+    <!-- Portal CSS -->
+
     <link
-    rel="stylesheet"
-    href="{{ url_for('static', filename='style.css') }}"
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
     >
 
+
     <!-- Font Awesome -->
+
     <link
         rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
     >
+
 </head>
+
 
 <body>
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow">
+
+<!-- ================================================== -->
+<!-- PORTAL NAVIGATION -->
+<!-- ================================================== -->
+
+<nav
+    class="navbar navbar-expand-lg navbar-dark shadow"
+    style="background-color:#0b1f3a;"
+>
 
     <div class="container">
 
+
         <!-- Portal Brand -->
+
         <a
             class="navbar-brand fw-bold"
             href="{{ url_for('main.dashboard') }}"
-         >
-            📋 Customer Management Portal
+        >
+
+            📋 BAU Customer Portal
+
         </a>
 
+
         <!-- Mobile Menu Button -->
+
         <button
             class="navbar-toggler"
             type="button"
@@ -49,10 +80,14 @@
             aria-expanded="false"
             aria-label="Toggle navigation"
         >
+
             <span class="navbar-toggler-icon"></span>
+
         </button>
 
+
         <!-- Navigation -->
+
         <div
             class="collapse navbar-collapse"
             id="navbarNav"
@@ -60,101 +95,159 @@
 
             <ul class="navbar-nav ms-auto">
 
+
                 {% if current_user.is_authenticated %}
 
+
                     <!-- Dashboard -->
+
                     <li class="nav-item">
+
                         <a
                             class="nav-link"
                             href="{{ url_for('main.dashboard') }}"
                         >
+
                             Dashboard
+
                         </a>
+
                     </li>
 
+
                     <!-- Customers -->
+
                     <li class="nav-item">
+
                         <a
                             class="nav-link"
                             href="{{ url_for('main.customers') }}"
                         >
+
                             Customers
+
                         </a>
+
                     </li>
-                    
+
+
                     <!-- Archived Customers -->
+
                     <li class="nav-item">
+
                         <a
                             class="nav-link"
                             href="{{ url_for('main.archived_customers') }}"
                         >
+
                             📦 Archived Customers
+
                         </a>
+
                     </li>
 
+
                     <!-- Add Customer -->
+
                     <li class="nav-item">
+
                         <a
                             class="nav-link"
                             href="{{ url_for('main.add_customer') }}"
                         >
-                            Add Customer
+
+                            ➕ Add Customer
+
                         </a>
+
                     </li>
 
+
                     <!-- Profile -->
+
                     <li class="nav-item">
+
                         <a
                             class="nav-link"
                             href="{{ url_for('main.profile') }}"
                         >
+
                             👤 Profile
+
                         </a>
+
                     </li>
 
+
                     <!-- Logout -->
+
                     <li class="nav-item">
+
                         <a
                             class="nav-link"
                             href="{{ url_for('main.logout') }}"
                         >
+
                             Logout
+
                         </a>
+
                     </li>
+
 
                 {% else %}
 
+
                     <!-- Portal Information -->
+
                     <li class="nav-item">
+
                         <a
                             class="nav-link"
                             href="{{ url_for('main.portal_information') }}"
                         >
+
                             Portal Information
+
                         </a>
+
                     </li>
 
+
                     <!-- Login -->
+
                     <li class="nav-item">
+
                         <a
                             class="nav-link"
                             href="{{ url_for('main.login') }}"
                         >
+
                             Login
+
                         </a>
+
                     </li>
 
-                    <!-- Create Your Account -->
+
+                    <!-- Create Account -->
+
                     <li class="nav-item">
+
                         <a
                             class="nav-link"
                             href="{{ url_for('main.register') }}"
                         >
+
                             Create Your Account
+
                         </a>
+
                     </li>
 
+
                 {% endif %}
+
 
             </ul>
 
@@ -165,10 +258,16 @@
 </nav>
 
 
-<!-- Main Content Container -->
-<div class="container mt-4  portal-content">
+
+<!-- ================================================== -->
+<!-- MAIN CONTENT -->
+<!-- ================================================== -->
+
+<div class="container mt-2 portal-content">
+
 
     <!-- Flash Messages -->
+
     {% with messages = get_flashed_messages(with_categories=true) %}
 
         {% if messages %}
@@ -179,6 +278,7 @@
                     class="alert alert-{{ category }} alert-dismissible fade show"
                     role="alert"
                 >
+
                     {{ message }}
 
                     <button
@@ -197,17 +297,52 @@
     {% endwith %}
 
 
+
     <!-- Page Content -->
+
     {% block content %}
+
     {% endblock %}
+
 
 </div>
 
 
+
+<!-- ================================================== -->
+<!-- PORTAL FOOTER -->
+<!-- ================================================== -->
+
+<footer class="mt-5 py-4 border-top">
+
+    <div class="container text-center">
+
+        <div class="fw-bold">
+            BAU Customer Portal
+        </div>
+
+        <div class="text-muted small">
+            Powered by BAU Digital Technologies Pty Ltd
+        </div>
+
+        <div class="text-muted small mt-1">
+            © 2026 BAU Digital Technologies Pty Ltd. All rights reserved. 
+        </div>
+
+    </div>
+
+</footer>
+
+
+
 <!-- Bootstrap JavaScript -->
+
 <script
     src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
 ></script>
 
+
 </body>
+
 </html>
+
