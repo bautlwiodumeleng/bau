@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request, Response, abort, current_app, send_from_directory
+from flask import Blueprint, render_template, redirect, url_for, flash, request, Response, abort, current_app, send_from_directory, jsonify
 import csv
 from io import StringIO
 import requests
@@ -487,7 +487,7 @@ def live_search():
 
     return jsonify([
         {
-            "code": customer.code,
+            "code": customer.customer_code,
             "name": customer.name,
             "phone": customer.phone,
             "email": customer.email,
@@ -1208,6 +1208,7 @@ def upload_customer_document(customer_code):
 @main.route(
     "/customer/<string:customer_code>/document/<int:document_id>/<string:action>"
 )
+
 @login_required
 def customer_document(document_id, customer_code, action):
 
@@ -1271,7 +1272,7 @@ def delete_customer_document(customer_code, document_id):
         id=document_id,
         customer_id=customer.id
     ).first_or_404()
-
+    
     # Delete the file from Cloudinary
     if document.cloudinary_public_id:
         configure_cloudinary()
