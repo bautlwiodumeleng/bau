@@ -1174,7 +1174,8 @@ def upload_customer_document(customer_code):
     upload_result = cloudinary.uploader.upload(
         file,
         folder=f"customer_documents/{customer.customer_code}",
-        resource_type="auto"
+        resource_type="auto",
+        type="authenticated"
     )
 
     cloudinary_public_id = upload_result["public_id"]
@@ -1233,11 +1234,13 @@ def customer_document(document_id, customer_code, action):
 
     resource_type = document.cloudinary_resource_type or "image"
 
-    # Generate the Cloudinary URL
+    # Generate a signed URL for the authenticated Cloudinary asset
     url, options = cloudinary.utils.cloudinary_url(
         document.cloudinary_public_id,
         resource_type=resource_type,
-        secure=True
+        type="authenticated",
+        secure=True,
+        sign_url=True
     )
 
     if action == "view":
@@ -1247,17 +1250,20 @@ def customer_document(document_id, customer_code, action):
     download_url, options = cloudinary.utils.cloudinary_url(
         document.cloudinary_public_id,
         resource_type=resource_type,
+        type="authenticated",
         secure=True,
+        sign_url=True,
         flags="attachment"
     )
 
     return redirect(download_url)
 
+
+
 @main.route(
     "/customer/<string:customer_code>/document/<int:document_id>/delete",
     methods=["POST"]
 )
-
 @login_required
 def delete_customer_document(customer_code, document_id):
 
