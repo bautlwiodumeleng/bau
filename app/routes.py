@@ -15,6 +15,7 @@ from .models import User, Customer, Task, CustomerDocument
 from . import db
 from flask import abort
 from datetime import datetime, UTC, date, timedelta
+from sqlalchemy import or_
 
 from openpyxl.styles import PatternFill
 
@@ -496,18 +497,13 @@ def live_search():
         }
         for customer in customers
     ])
-
+    
 @main.route("/export/csv")
 @login_required
 def export_csv():
 
-    customers = Customer.query.filter_by(
-        created_by=current_user.id,
-        is_archived=False
-    ).all()
+    customers = get_filtered_customers()
 
-    print("Export customer count:", len(customers))
-    
     output = StringIO()
     writer = csv.writer(output)
 
@@ -525,15 +521,15 @@ def export_csv():
     # Customer data
     for customer in customers:
 
-                writer.writerow([
-                    format_customer_code(customer.customer_code),
-                    customer.name,
-                    customer.phone,
-                    customer.email,
-                    customer.organisation_name,
-                    customer.address,
-                    customer.notes
-                ])   
+        writer.writerow([
+            format_customer_code(customer.customer_code),
+            customer.name,
+            customer.phone,
+            customer.email,
+            customer.organisation_name,
+            customer.address,
+            customer.notes
+        ])
 
     output.seek(0)
 
@@ -544,25 +540,23 @@ def export_csv():
             "Content-Disposition":
             "attachment; filename=customers.csv"
         }
-    )
-    
+    ) 
     
 @main.route("/export/xlsx")
 @login_required
 def export_xlsx():
 
-    customers = Customer.query.filter_by(
-        created_by=current_user.id,
-        is_archived=False
-    ).all()
-    
-    print("Export customer count:", len(customers))
+    customers = get_filtered_customers()
+
     
     wb = Workbook()
     ws = wb.active
     ws.title = "Customers"
 
+    # ----------------------------------------------------
     # Header row
+    # ----------------------------------------------------
+
     headers = [
         "Customer Code",
         "Name",
@@ -575,7 +569,10 @@ def export_xlsx():
 
     ws.append(headers)
 
+    # ----------------------------------------------------
     # Header formatting
+    # ----------------------------------------------------
+
     header_fill = PatternFill(
         fill_type="solid",
         start_color="1F4E78",
@@ -583,14 +580,18 @@ def export_xlsx():
     )
 
     for cell in ws[1]:
+
         cell.font = Font(
             bold=True,
             color="FFFFFF"
         )
+
         cell.fill = header_fill
 
+    # ----------------------------------------------------
     # Customer data
-    # Customer data
+    # ----------------------------------------------------
+
     for customer in customers:
 
         ws.append([
@@ -602,33 +603,51 @@ def export_xlsx():
             customer.address or "",
             customer.notes or ""
         ])
-            
+
+    # ----------------------------------------------------
     # Auto-size columns
+    # ----------------------------------------------------
+
     for column in ws.columns:
+
         max_length = 0
-        column_letter = get_column_letter(column[0].column)
+
+        column_letter = get_column_letter(
+            column[0].column
+        )
 
         for cell in column:
+
             if cell.value:
+
                 max_length = max(
                     max_length,
                     len(str(cell.value))
                 )
 
-        ws.column_dimensions[column_letter].width = max_length + 3
+        ws.column_dimensions[
+            column_letter
+        ].width = max_length + 3
 
-        
-    # Freeze the header row
+    # ----------------------------------------------------
+    # Freeze header row
+    # ----------------------------------------------------
+
     ws.freeze_panes = "A2"
 
-    # Thin borders for all cells
+    # ----------------------------------------------------
+    # Thin borders
+    # ----------------------------------------------------
+
     thin = Side(
         border_style="thin",
         color="000000"
     )
 
     for row in ws.iter_rows():
+
         for cell in row:
+
             cell.border = Border(
                 left=thin,
                 right=thin,
@@ -636,37 +655,48 @@ def export_xlsx():
                 bottom=thin
             )
 
+    # ----------------------------------------------------
     # Save workbook to memory
+    # ----------------------------------------------------
+
     output = BytesIO()
+
     wb.save(output)
+
     output.seek(0)
 
+    # ----------------------------------------------------
     # Return Excel file
+    # ----------------------------------------------------
+
     return Response(
         output.getvalue(),
-        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        mimetype=(
+            "application/vnd.openxmlformats-"
+            "officedocument.spreadsheetml.sheet"
+        ),
         headers={
-            "Content-Disposition": "attachment; filename=customers.xlsx"
+            "Content-Disposition":
+            "attachment; filename=customers.xlsx"
         }
-    ) 
+    )
     
-@main.route("/export/customers")
-@login_required
-def export_customers():
-    return render_template("export_customers.html")
-
-@main.route("/export/pdf")
-@login_required
-def export_pdf():
+def get_filtered_customers():
+    """
+    Return active customers belonging to the logged-in user,
+    filtered by month, year and organisation when provided.
+    """
 
     month = request.args.get("month", type=int)
     year = request.args.get("year", type=int)
+    organisation = request.args.get("organisation", "").strip()
 
     query = Customer.query.filter_by(
         created_by=current_user.id,
         is_archived=False
     )
 
+    # Filter by month and year
     if month and year:
 
         start_date = datetime(
@@ -677,13 +707,16 @@ def export_pdf():
         )
 
         if month == 12:
+
             end_date = datetime(
                 year + 1,
                 1,
                 1,
                 tzinfo=UTC
             )
+
         else:
+
             end_date = datetime(
                 year,
                 month + 1,
@@ -696,14 +729,97 @@ def export_pdf():
             Customer.created_at < end_date
         )
 
-    customers = query.all()
+    # Filter by year only
+    elif year:
+
+        start_date = datetime(
+            year,
+            1,
+            1,
+            tzinfo=UTC
+        )
+
+        end_date = datetime(
+            year + 1,
+            1,
+            1,
+            tzinfo=UTC
+        )
+
+        query = query.filter(
+            Customer.created_at >= start_date,
+            Customer.created_at < end_date
+        )
+
+    # Filter by organisation
+    if organisation:
+
+        if organisation == "__NO_ORGANISATION__":
+
+            query = query.filter(
+                or_(
+                    Customer.organisation_name.is_(None),
+                    Customer.organisation_name == ""
+                )
+            )
+
+        else:
+
+            query = query.filter(
+                Customer.organisation_name == organisation
+            )
+            
+        return query.order_by(
+            Customer.created_at.desc()
+        ).all()
+    
+@main.route("/export/customers")
+@login_required
+def export_customers():
+
+    # Get all organisations belonging to the logged-in user's customers
+    organisations = db.session.query(
+        Customer.organisation_name
+    ).filter(
+        Customer.created_by == current_user.id,
+        Customer.is_archived == False,
+        Customer.organisation_name.isnot(None),
+        Customer.organisation_name != ""
+    ).distinct().order_by(
+        Customer.organisation_name
+    ).all()
+
+    organisation_list = [
+        organisation[0]
+        for organisation in organisations
+    ]
+
+    # Get filtered customers when filters are submitted
+    customers = []
+
+    if request.args.get("filter") == "1":
+        customers = get_filtered_customers()
+
+    return render_template(
+        "export_customers.html",
+        customers=customers,
+        organisation_list=organisation_list
+    )
+
+@main.route("/export/pdf")
+@login_required
+def export_pdf():
+    
+    month = request.args.get("month", type=int)
+    year = request.args.get("year", type=int)
+    
+    customers = get_filtered_customers()
+    organisation = request.args.get("organisation", "").strip()
 
     print(
         "PDF Export customer count:",
         len(customers)
     )
-
-    print("PDF Export customer count:", len(customers))
 
     customer_count = len(customers)
 
@@ -809,7 +925,6 @@ def export_pdf():
                 "Could not load organisation logo:",
                 e
             )
-
     # ----------------------------------------------------
     # Organisation Header Table
     # ----------------------------------------------------
@@ -842,6 +957,7 @@ def export_pdf():
             ],
             colWidths=[690]
         )
+
     header_table.setStyle(
         TableStyle([
             ("VALIGN", (0, 0), (-1, -1), "TOP"),
@@ -872,11 +988,12 @@ def export_pdf():
     )
 
     elements.append(Spacer(1, 4))
-
     # ----------------------------------------------------
     # Report Title
     # ----------------------------------------------------
+
     if month and year:
+
         report_period = datetime(
             year,
             month,
@@ -889,6 +1006,7 @@ def export_pdf():
         )
 
     else:
+
         report_title = (
             "<b>CUSTOMER MANAGEMENT SYSTEM — "
             "All Customers</b>"
@@ -901,19 +1019,24 @@ def export_pdf():
         )
     )
 
+
     # ----------------------------------------------------
     # Report Information
     # ----------------------------------------------------
 
     generated = datetime.now().strftime("%d %b %Y %H:%M")
 
+    report_information = (
+        f"<b>Customer List</b>"
+        f"&nbsp;&nbsp;&nbsp;&nbsp;"
+        f"Generated: {generated}"
+        f"&nbsp;&nbsp;&nbsp;&nbsp;"
+        f"Active Customers: <b>{customer_count}</b>"
+    )
+
     elements.append(
         Paragraph(
-            f"<b>Customer List</b>"
-            f"&nbsp;&nbsp;&nbsp;&nbsp;"
-            f"Generated: {generated}"
-            f"&nbsp;&nbsp;&nbsp;&nbsp;"
-            f"Active Customers: <b>{customer_count}</b>",
+            report_information,
             report_style
         )
     )
@@ -926,7 +1049,7 @@ def export_pdf():
 
     table_data = [
         [
-            "Customer ID",
+            "Customer Code",
             "Customer Name",
             "Phone",
             "Email",
@@ -937,13 +1060,18 @@ def export_pdf():
 
     for customer in customers:
 
+        organisation = customer.organisation_name
+
+        if organisation is None or not str(organisation).strip():
+            organisation = "-"
+
         table_data.append(
             [
                 customer.customer_code or "",
                 customer.name or "",
                 customer.phone or "",
                 customer.email or "",
-                customer.organisation_name or "",
+                organisation,
                 customer.address or ""
             ]
         )
@@ -1300,8 +1428,7 @@ def delete_customer_document(customer_code, document_id):
             customer_code=customer.customer_code
         )
     )    
-    
-
+   
 @main.route("/archive_customer/<string:customer_code>")
 @login_required
 def archive_customer(customer_code):
@@ -1335,8 +1462,6 @@ def archived_customers():
         customers=customers
     )
 
-
-
 @main.route("/restore_customer/<string:customer_code>")
 @login_required
 def restore_customer(customer_code):
@@ -1353,7 +1478,6 @@ def restore_customer(customer_code):
     flash("Customer restored successfully!", "success")
 
     return redirect(url_for("main.archived_customers"))
-
 
 
 @main.route("/delete_customer/<string:customer_code>")

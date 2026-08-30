@@ -1,34 +1,69 @@
 {% extends "base.html" %}
 
-{% block title %}Export Customers{% endblock %}
+{% block title %}Customer Filter & Export{% endblock %}
 
 {% block content %}
 
-<div class="container mt-5">
+<div class="container mt-4 form-page-area">
 
-    <div class="card shadow-sm">
+    <!-- Portal Branding -->
+
+    <div class="text-center mb-4">
+
+        <h1 class="fw-bold mb-1">
+            BAU Customer Portal
+        </h1>
+
+        <p class="text-muted mb-0">
+            Powered by BAU Digital Technologies Pty Ltd
+        </p>
+
+    </div>
+
+
+    <!-- Page Header -->
+
+    <div class="text-center mb-4">
+
+        <h2 class="fw-bold mb-1">
+            📊 Customer Filter & Export
+        </h2>
+
+        <p class="text-muted mb-0">
+            Filter your customer records and choose an export format.
+        </p>
+
+    </div>
+
+
+    <!-- Filter Card -->
+
+    <div class="card shadow-sm border-0 mb-4">
 
         <div class="card-body p-4">
 
-            <h2 class="fw-bold mb-3">
-                Export Customer List
-            </h2>
-
-            <p class="text-muted mb-4">
-                Select a month and year to export customers created
-                during that period.
-            </p>
-
             <form method="GET"
-                  action="{{ url_for('main.export_pdf') }}">
+                  action="{{ url_for('main.export_customers') }}">
 
-                <div class="row g-3 align-items-end">
+                <!-- Hidden filter indicator -->
+
+                <input
+                    type="hidden"
+                    name="filter"
+                    value="1"
+                >
+
+
+                <div class="row g-3">
 
                     <!-- Month -->
-                    <div class="col-md-3">
 
-                        <label for="month"
-                               class="form-label fw-bold">
+                    <div class="col-md-4">
+
+                        <label
+                            for="month"
+                            class="form-label fw-bold"
+                        >
                             Month
                         </label>
 
@@ -42,28 +77,79 @@
                                 All Months
                             </option>
 
-                            <option value="1">January</option>
-                            <option value="2">February</option>
-                            <option value="3">March</option>
-                            <option value="4">April</option>
-                            <option value="5">May</option>
-                            <option value="6">June</option>
-                            <option value="7">July</option>
-                            <option value="8">August</option>
-                            <option value="9">September</option>
-                            <option value="10">October</option>
-                            <option value="11">November</option>
-                            <option value="12">December</option>
+                            <option value="1"
+                                {% if request.args.get('month') == '1' %}selected{% endif %}>
+                                January
+                            </option>
+
+                            <option value="2"
+                                {% if request.args.get('month') == '2' %}selected{% endif %}>
+                                February
+                            </option>
+
+                            <option value="3"
+                                {% if request.args.get('month') == '3' %}selected{% endif %}>
+                                March
+                            </option>
+
+                            <option value="4"
+                                {% if request.args.get('month') == '4' %}selected{% endif %}>
+                                April
+                            </option>
+
+                            <option value="5"
+                                {% if request.args.get('month') == '5' %}selected{% endif %}>
+                                May
+                            </option>
+
+                            <option value="6"
+                                {% if request.args.get('month') == '6' %}selected{% endif %}>
+                                June
+                            </option>
+
+                            <option value="7"
+                                {% if request.args.get('month') == '7' %}selected{% endif %}>
+                                July
+                            </option>
+
+                            <option value="8"
+                                {% if request.args.get('month') == '8' %}selected{% endif %}>
+                                August
+                            </option>
+
+                            <option value="9"
+                                {% if request.args.get('month') == '9' %}selected{% endif %}>
+                                September
+                            </option>
+
+                            <option value="10"
+                                {% if request.args.get('month') == '10' %}selected{% endif %}>
+                                October
+                            </option>
+
+                            <option value="11"
+                                {% if request.args.get('month') == '11' %}selected{% endif %}>
+                                November
+                            </option>
+
+                            <option value="12"
+                                {% if request.args.get('month') == '12' %}selected{% endif %}>
+                                December
+                            </option>
 
                         </select>
 
                     </div>
 
-                    <!-- Year -->
-                    <div class="col-md-2">
 
-                        <label for="year"
-                               class="form-label fw-bold">
+                    <!-- Year -->
+
+                    <div class="col-md-4">
+
+                        <label
+                            for="year"
+                            class="form-label fw-bold"
+                        >
                             Year
                         </label>
 
@@ -77,21 +163,60 @@
                                 All Years
                             </option>
 
-                            <option value="2026">2026</option>
-                            <option value="2027">2027</option>
-                            <option value="2028">2028</option>
-                            <option value="2029">2029</option>
-                            <option value="2030">2030</option>
-                            <option value="2031">2031</option>
-                            <option value="2032">2032</option>
-                            <option value="2033">2033</option>
-                            <option value="2034">2034</option>
-                            <option value="2035">2035</option>
-                            <option value="2036">2036</option>
-                            <option value="2037">2037</option>
-                            <option value="2038">2038</option>
-                            <option value="2039">2039</option>
-                            <option value="2040">2040</option>
+                            {% for year in range(2026, 2041) %}
+
+                                <option
+                                    value="{{ year }}"
+                                    {% if request.args.get('year') == year|string %}selected{% endif %}
+                                >
+                                    {{ year }}
+                                </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- Organisation -->
+
+                    <div class="col-md-4">
+
+                        <label
+                            for="organisation"
+                            class="form-label fw-bold"
+                        >
+                            Organisation
+                        </label>
+
+                        <select
+                            name="organisation"
+                            id="organisation"
+                            class="form-select"
+                        >
+
+                            <option value="">
+                                All Organisations
+                            </option>
+
+                            {% for organisation in organisation_list %}
+
+                                <option
+                                    value="{{ organisation }}"
+                                    {% if request.args.get('organisation') == organisation %}selected{% endif %}
+                                >
+                                    {{ organisation }}
+                                </option>
+
+                            {% endfor %}
+
+                            <option
+                                value="__NO_ORGANISATION__"
+                                {% if request.args.get('organisation') == '__NO_ORGANISATION__' %}selected{% endif %}
+                            >
+                                No Organisation
+                            </option>
 
                         </select>
 
@@ -99,21 +224,24 @@
 
                 </div>
 
-                <!-- Action Buttons -->
+
+                <!-- Filter Buttons -->
+
                 <div class="mt-4">
 
                     <button
                         type="submit"
                         class="btn btn-primary"
                     >
-                        Export PDF
+                        🔍 Filter Customers
                     </button>
 
+
                     <a
-                        href="{{ url_for('main.dashboard') }}"
+                        href="{{ url_for('main.export_customers') }}"
                         class="btn btn-secondary ms-2"
                     >
-                        Cancel
+                        Clear Filters
                     </a>
 
                 </div>
@@ -121,6 +249,257 @@
             </form>
 
         </div>
+
+    </div>
+
+
+    {% if request.args.get('filter') == '1' %}
+
+        <!-- Results -->
+
+        <div class="card shadow-sm border-0 mb-4">
+
+            <div class="card-body">
+
+                <div class="d-flex justify-content-between align-items-center">
+
+                    <div>
+
+                        <h4 class="fw-bold mb-1">
+                            Filtered Customers
+                        </h4>
+
+                        <p class="text-muted mb-0">
+                            {{ customers|length }} customer(s) found.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Customer Table -->
+
+        <div class="card shadow-sm border-0 mb-4">
+
+            <div class="card-body p-0">
+
+                <div
+                    class="table-responsive"
+                    style="max-height:600px; overflow-y:auto;"
+                >
+
+                    <table class="table table-hover align-middle mb-0">
+
+                        <thead
+                            style="
+                                position: sticky;
+                                top: 0;
+                                z-index: 1000;
+                            "
+                        >
+
+                            <tr class="text-center">
+
+                                <th style="
+                                    background-color:#0b1f3a !important;
+                                    color:white;
+                                ">
+                                    Customer Code
+                                </th>
+
+                                <th style="
+                                    background-color:#0b1f3a !important;
+                                    color:white;
+                                ">
+                                    👤 Name
+                                </th>
+
+                                <th style="
+                                    background-color:#0b1f3a !important;
+                                    color:white;
+                                ">
+                                    📞 Phone
+                                </th>
+
+                                <th style="
+                                    background-color:#0b1f3a !important;
+                                    color:white;
+                                ">
+                                    📧 Email
+                                </th>
+
+                                <th style="
+                                    background-color:#0b1f3a !important;
+                                    color:white;
+                                ">
+                                    Organisation
+                                </th>
+
+                                <th style="
+                                    background-color:#0b1f3a !important;
+                                    color:white;
+                                ">
+                                    📍 Address
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+                            {% for customer in customers %}
+
+                                <tr>
+
+                                    <td>
+
+                                        <span class="badge bg-secondary px-3 py-2">
+                                            {{ customer.customer_code }}
+                                        </span>
+
+                                    </td>
+
+                                    <td>
+                                        {{ customer.name }}
+                                    </td>
+
+                                    <td>
+                                        {{ customer.phone }}
+                                    </td>
+
+                                    <td>
+                                        {{ customer.email }}
+                                    </td>
+
+                                    <td>
+
+                                        {% if customer.organisation_name %}
+
+                                            <span class="badge bg-secondary">
+                                                {{ customer.organisation_name }}
+                                            </span>
+
+                                        {% else %}
+
+                                            -
+
+                                        {% endif %}
+
+                                    </td>
+
+                                    <td>
+                                        {{ customer.address }}
+                                    </td>
+
+                                </tr>
+
+                            {% else %}
+
+                                <tr>
+
+                                    <td
+                                        colspan="6"
+                                        class="text-center py-4 text-muted"
+                                    >
+                                        No customers match the selected filters.
+                                    </td>
+
+                                </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Export Options -->
+
+        {% if customers %}
+
+            <div class="card shadow-sm border-0 mb-4">
+
+                <div class="card-body text-center">
+
+                    <h5 class="fw-bold mb-3">
+                        Export Filtered Customers
+                    </h5>
+
+                    <p class="text-muted">
+                        {{ customers|length }} customer(s) are ready for export.
+                    </p>
+
+
+                    <a
+                        href="{{ url_for(
+                            'main.export_pdf',
+                            month=request.args.get('month'),
+                            year=request.args.get('year'),
+                            organisation=request.args.get('organisation')
+                        ) }}"
+                        class="btn btn-outline-danger me-2"
+                    >
+                        📄 Export PDF
+                    </a>
+
+
+                    <a
+                        href="{{ url_for(
+                            'main.export_xlsx',
+                            month=request.args.get('month'),
+                            year=request.args.get('year'),
+                            organisation=request.args.get('organisation')
+                        ) }}"
+                        class="btn btn-outline-success me-2"
+                    >
+                        📗 Export Excel
+                    </a>
+
+
+                    <a
+                        href="{{ url_for(
+                            'main.export_csv',
+                            month=request.args.get('month'),
+                            year=request.args.get('year'),
+                            organisation=request.args.get('organisation')
+                        ) }}"
+                        class="btn btn-outline-primary"
+                    >
+                        📤 Export CSV
+                    </a>
+
+                </div>
+
+            </div>
+
+        {% endif %}
+
+    {% endif %}
+
+
+    <!-- Back -->
+
+    <div class="text-center mb-4">
+
+        <a
+            href="{{ url_for('main.customers') }}"
+            class="btn btn-secondary"
+        >
+            ← Back to Customers
+        </a>
 
     </div>
 
