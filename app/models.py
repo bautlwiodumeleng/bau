@@ -64,13 +64,60 @@ class User(UserMixin, db.Model):
         db.String(255),
         nullable=True
     )
+    # ----------------------------------------------------
+    # Subscription Information
+    # ----------------------------------------------------
 
+    subscription_status = db.Column(
+        db.String(20),
+        nullable=False,
+        default="TRIAL"
+    )
+
+    trial_started_at = db.Column(
+        db.DateTime,
+        nullable=True
+    )
+
+    trial_ends_at = db.Column(
+        db.DateTime,
+        nullable=True
+    )
+
+    subscription_plan = db.Column(
+        db.String(30),
+        nullable=True
+    )
+
+    billing_period = db.Column(
+        db.String(20),
+        nullable=True
+    )
+
+    subscription_started_at = db.Column(
+        db.DateTime,
+        nullable=True
+    )
+
+    subscription_ends_at = db.Column(
+        db.DateTime,
+        nullable=True
+    )
+
+    stripe_customer_id = db.Column(
+        db.String(255),
+        nullable=True
+    )
+
+    stripe_subscription_id = db.Column(
+        db.String(255),
+        nullable=True
+    )
     customers = db.relationship(
         "Customer",
         backref="owner",
         lazy=True
     )
-
     reset_token = db.Column(
         db.String(100),
         nullable=True

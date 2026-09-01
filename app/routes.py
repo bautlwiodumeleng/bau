@@ -84,10 +84,14 @@ def register():
             flash("An account with this email already exists.", "danger")
             return redirect(url_for("main.register"))    
 
+        now = datetime.now(UTC)
+
         user = User(
             username=form.username.data,
             email=form.email.data,
-            password=generate_password_hash(form.password.data)
+            password=generate_password_hash(form.password.data),
+            trial_started_at=now,
+            trial_ends_at=now + timedelta(days=14)
         )
 
         db.session.add(user)
