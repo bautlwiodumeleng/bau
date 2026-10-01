@@ -1,4 +1,5 @@
 import os
+import stripe
 
 class Config:
     SECRET_KEY = os.environ.get("SECRET_KEY") or "change-this-to-a-long-random-secret"
@@ -20,6 +21,7 @@ class Config:
     CLOUDINARY_API_KEY = os.environ.get("CLOUDINARY_API_KEY")
     CLOUDINARY_API_SECRET = os.environ.get("CLOUDINARY_API_SECRET")
     
+    STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY")
    
    
    

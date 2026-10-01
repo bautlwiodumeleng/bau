@@ -28,7 +28,14 @@ from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
 from reportlab.pdfbase import pdfmetrics
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.platypus import Paragraph
+import os
+import stripe
 
+stripe.api_key = os.environ.get("STRIPE_SECRET_KEY")
+
+from dotenv import load_dotenv
+
+load_dotenv()
 
 import cloudinary
 import cloudinary.uploader
@@ -57,7 +64,7 @@ from reportlab.platypus import (
 )
 
 main = Blueprint("main", __name__)
-    
+   
 @main.route("/")
 def home():
     return render_template("home.html")
@@ -219,7 +226,86 @@ def dashboard():
         upcoming_tasks=upcoming_tasks,
         overdue_tasks=overdue_tasks
     )
+@main.route("/subscription")
+@login_required
+def subscription():
+    return render_template("subscription.html")
 
+@main.route("/create-checkout-session/<price_id>")
+@login_required
+def create_checkout_session(price_id):
+
+    try:
+        checkout_session = stripe.checkout.Session.create(
+            mode="subscription",
+            line_items=[
+                {
+                    "price": price_id,
+                    "quantity": 1,
+                }
+            ],
+            managed_payments={
+                "enabled": False
+            },
+            success_url=url_for(
+                "main.subscription_success",
+                _external=True
+            ),
+            cancel_url=url_for(
+                "main.subscription",
+                _external=True
+            ),
+            customer_email=current_user.email,
+        )
+
+        return redirect(checkout_session.url)
+
+    except Exception as e:
+        flash(f"Unable to start subscription: {str(e)}", "danger")
+        return redirect(url_for("main.subscription"))
+    
+@main.route("/stripe/webhook", methods=["POST"])
+def stripe_webhook():
+
+    payload = request.data
+    sig_header = request.headers.get("Stripe-Signature")
+
+    try:
+        event = stripe.Webhook.construct_event(
+            payload,
+            sig_header,
+            os.environ.get("STRIPE_WEBHOOK_SECRET")
+        )
+
+    except ValueError:
+        return "Invalid payload", 400
+
+    except stripe.error.SignatureVerificationError:
+        return "Invalid signature", 400
+
+    if event["type"] == "checkout.session.completed":
+
+        session = event["data"]["object"]
+
+        customer_email = session.get("customer_email")
+
+        if customer_email:
+            user = User.query.filter_by(
+                email=customer_email
+            ).first()
+
+            if user:
+                user.subscription_status = "ACTIVE"
+                user.stripe_customer_id = session.get("customer")
+
+                db.session.commit()
+
+    return "", 200
+    
+@main.route("/subscription/success")
+@login_required
+def subscription_success():
+    return render_template("subscription_success.html")
 
     
 @main.route("/logout")
@@ -1642,7 +1728,7 @@ def reset_password(token):
         form=form
     )
 
-   
+
 
        
 

@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}Choose Your Plan{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <div class="text-center mb-5">
+        <h2 class="fw-bold">Choose Your Plan</h2>
+        <p class="text-muted">
+            Continue using BAU Customer Portal by selecting a subscription plan.
+        </p>
+    </div>
+
+    <div class="row justify-content-center g-4">
+
+        <!-- Starter -->
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+
+                    <h4 class="fw-bold">Starter</h4>
+
+                    <p class="text-muted">
+                        For small businesses
+                    </p>
+
+                    <h3>€9.99 <small>/ month</small></h3>
+                    <p class="text-muted">or €99/year</p>
+
+                    <div class="d-grid gap-2 mt-4">
+
+                        <a href="{{ url_for('main.create_checkout_session', price_id='price_1UI7PSCRKuEftn7auSjn9QyP') }}"
+                            class="btn btn-primary">
+                                Subscribe Monthly
+                            </a>
+
+                            <a href="{{ url_for('main.create_checkout_session', price_id='price_1UI7PQCRKuEftn7axgpF9s0N') }}"
+                            class="btn btn-outline-primary">
+                                Subscribe Yearly
+                            </a>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Business -->
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+
+                    <h4 class="fw-bold">Business</h4>
+
+                    <p class="text-muted">
+                        For growing businesses
+                    </p>
+
+                    <h3>€19.99 <small>/ month</small></h3>
+                    <p class="text-muted">or €199/year</p>
+
+                    <div class="d-grid gap-2 mt-4">
+
+                        <a href="{{ url_for('main.create_checkout_session', price_id='price_1UI7PRCRKuEftn7aOz9jIwmA') }}"
+                            class="btn btn-primary">
+                                Subscribe Monthly
+                            </a>
+
+                            <a href="{{ url_for('main.create_checkout_session', price_id='price_1UI7PQCRKuEftn7aF4LYLqlQ') }}"
+                            class="btn btn-outline-primary">
+                                Subscribe Yearly
+                            </a>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Professional -->
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+
+                    <h4 class="fw-bold">Professional</h4>
+
+                    <p class="text-muted">
+                        For established businesses
+                    </p>
+
+                    <h3>€34.99 <small>/ month</small></h3>
+                    <p class="text-muted">or €349/year</p>
+
+                    <div class="d-grid gap-2 mt-4">
+
+                        <a href="{{ url_for('main.create_checkout_session', price_id='price_1UI7PWCRKuEftn7aMkokTdxL') }}"
+                            class="btn btn-primary">
+                                Subscribe Monthly
+                            </a>
+
+                            <a href="{{ url_for('main.create_checkout_session', price_id='price_1UI7PWCRKuEftn7aGfQesJZ0') }}"
+                            class="btn btn-outline-primary">
+                                Subscribe Yearly
+                            </a>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
